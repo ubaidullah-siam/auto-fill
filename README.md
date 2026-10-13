@@ -1,13 +1,13 @@
 # Rowform
 
-Rowform is a static, browser-only helper for turning Excel rows into Google Forms prefilled review links. It does not submit forms. The workbook is read in the browser and is not uploaded to a server.
+Rowform is a static front end for turning Excel rows into Google Forms prefilled review links. Excel stays in the browser; only a Google Form URL is sent to the optional Apps Script resolver to look up public question IDs. Rowform never submits forms.
 
 ## Use
 
 1. Open `site/index.html` or the deployed GitHub Pages URL.
 2. Choose an `.xlsx` or `.xls` workbook.
 3. Paste a `forms.gle` share link, a full Google Forms link, or a prefilled link into Rowform.
-4. With the backend enabled, Rowform looks up public Form question IDs automatically. Without it, add a **Get pre-filled link** from the same Form in the Field ID template input.
+4. After the one-time backend setup, save its `/exec` URL in **Automatic field lookup setup**. Public Form IDs are then looked up automatically. Without a backend, add a **Get pre-filled link** from the same Form in the Field ID template input.
 5. Map each question to an Excel column and generate review links.
 6. Open each link, review it, and submit it yourself in Google Forms.
 
@@ -20,7 +20,7 @@ The Apps Script backend must be deployed once from a Google account:
 1. Create a project at [script.google.com](https://script.google.com/) and paste `apps-script/Code.gs` into `Code.gs`.
 2. Choose **Deploy → New deployment → Web app**. Set **Execute as** to your account and **Who has access** to **Anyone**, then authorize the external-request permission.
 3. Copy the deployed `/exec` URL. The endpoint only fetches allowlisted Google Forms pages and caches question metadata; it does not accept workbook data or submit responses.
-4. Set that URL as `FORM_RESOLVER_API_URL` near the top of the script in `site/index.html`, then push the website update. After this one-time setup, a regular or `forms.gle` link can be inspected without entering a second template URL.
+4. Open the live Rowform site, expand **Automatic field lookup setup**, paste the `/exec` URL, and press **Save URL**. It is stored only in that browser, so no source edit or GitHub push is needed.
 
 Apps Script quotas apply. If Workspace policy blocks public Web Apps, the resolver must instead be deployed on a serverless host you control.
 
