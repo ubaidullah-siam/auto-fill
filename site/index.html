@@ -68,14 +68,6 @@
     .upload-label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
     .upload-label-row .field-label { margin: 0; }
     .field-row { margin-top: 14px; }
-    .backend-settings { margin-top: 15px; border: 1px solid var(--line); background: #f8faf6; }
-    .backend-settings summary { min-height: 44px; padding: 12px; color: var(--forest); cursor: pointer; font-size: 12px; font-weight: 800; }
-    .backend-settings-body { padding: 0 12px 12px; }
-    .backend-url-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-    .backend-url-row .button { min-width: 78px; }
-    .backend-status { min-height: 18px; margin: 7px 0 0; color: var(--muted); font-size: 12px; }
-    .backend-status.error { color: #a53e2a; }
-    .backend-status.success { color: var(--forest); }
     .text-button { min-height: 42px; padding: 0 8px; border: 0; background: transparent; color: var(--forest); font-size: 12px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
     .text-button:hover { color: #b94a32; }
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 22px; border: 1px solid var(--line); background: rgba(251, 252, 248, .74); }
@@ -304,19 +296,6 @@
               <input class="control" id="field-template-url" type="url" inputmode="url" placeholder="https://docs.google.com/forms/.../viewform?entry.123=..." autocomplete="url">
             </div>
 
-            <details class="backend-settings" id="backend-settings">
-              <summary data-i18n="backendSetupTitle">Automatic field lookup setup</summary>
-              <div class="backend-settings-body">
-                <label class="field-label" for="backend-url" data-i18n="backendUrlLabel">Google Apps Script Web App URL</label>
-                <p class="field-hint" data-i18n="backendUrlHint">Deploy the included Apps Script once, paste its /exec URL, then save it in this browser.</p>
-                <div class="backend-url-row">
-                  <input class="control" id="backend-url" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url">
-                  <button class="button secondary" id="backend-save" type="button" data-i18n="backendSave">Save</button>
-                </div>
-                <p class="backend-status" id="backend-status" role="status" aria-live="polite"></p>
-              </div>
-            </details>
-
             <div class="divider"></div>
 
             <div class="mapping-title">
@@ -389,7 +368,6 @@
         <section class="guide-step"><span class="guide-number">03</span><div><h3 data-i18n="guideLinkTitle">সঠিক Google Forms link</h3><p data-i18n="guideLinkBody">Google Form-এর menu থেকে <code>Get pre-filled link</code> নিন, sample value দিন, তারপর generated link paste করুন। সাধারণ <code>forms.gle</code> share link-এ field ID থাকে না।</p></div></section>
         <section class="guide-step"><span class="guide-number">04</span><div><h3 data-i18n="guideMapTitle">Column mapping</h3><p data-i18n="guideMapBody">প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।</p></div></section>
         <section class="guide-step"><span class="guide-number">05</span><div><h3 data-i18n="guidePrivacyTitle">তথ্য ও submission</h3><p data-i18n="guidePrivacyBody">Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।</p></div></section>
-        <section class="guide-step"><span class="guide-number">06</span><div><h3 data-i18n="guideBackendTitle">একবারের automatic lookup setup</h3><p data-i18n="guideBackendBody">apps-script/Code.gs কপি করে script.google.com/new-এ Apps Script project তৈরি করুন। Deploy → New deployment → Web app বাছুন; Execute as me, access Anyone দিন। Permission approve করে /exec URL Automatic field lookup-এ save করুন।</p></div></section>
         <p class="guide-note" data-i18n="guideNetworkNote">Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।</p>
       </div>
     </dialog>
@@ -402,6 +380,7 @@
 
   <script>
     (() => {
+      const FORM_RESOLVER_API_URL = "";
       const fileInput = document.querySelector("#file-input");
       const fileName = document.querySelector("#file-name");
       const fileMeta = document.querySelector("#file-meta");
@@ -411,9 +390,6 @@
       const rowCount = document.querySelector("#row-count");
       const templateInput = document.querySelector("#template-url");
       const fieldTemplateInput = document.querySelector("#field-template-url");
-      const backendUrlInput = document.querySelector("#backend-url");
-      const backendSaveButton = document.querySelector("#backend-save");
-      const backendStatus = document.querySelector("#backend-status");
       const mappingList = document.querySelector("#mapping-list");
       const mappingCount = document.querySelector("#mapping-count");
       const generateButton = document.querySelector("#generate-button");
@@ -446,12 +422,6 @@
           formLinkHint: "forms.gle, সাধারণ Form link, বা prefilled link দিন।",
           fieldTemplateLabel: "Field ID template (optional)",
           fieldTemplateHint: "উপরের link-এ entry ID না থাকলে একই Form-এর Get pre-filled link এখানে দিন।",
-          backendSetupTitle: "Automatic field lookup setup (একবার সেটআপ)",
-          backendUrlLabel: "Google Apps Script Web App URL",
-          backendUrlHint: "apps-script/Code.gs Web App হিসেবে deploy করে /exec URL দিন। URL শুধু এই browser-এ save হবে; backend শুধু Form URL পাবে, Excel নয়।",
-          backendSave: "Save URL", backendSaved: "Backend URL এই browser-এ save হয়েছে।", backendCleared: "Saved backend URL মুছে ফেলা হয়েছে।", backendInvalid: "Google Apps Script-এর valid /exec URL দিন।",
-          backendLookupPending: "Google Form-এর field খোঁজা হচ্ছে…", backendLookupFailed: "Automatic lookup হয়নি। Form public কি না এবং backend deployment ঠিক আছে কি না দেখুন।",
-          backendLookupDone: "{count}টি question পাওয়া গেছে। Excel column map করুন।",
           mappingLabel: "Field mapping", mappingHint: "Excel file ও Form link দিলে mapping এখানে দেখা যাবে।",
           generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না.",
           resultsTitle: "Review queue", resultsEmpty: "আপনার তৈরি link-গুলো এখানে দেখা যাবে", downloadButton: "লিংক CSV",
@@ -462,15 +432,17 @@
           guideSheetTitle: "Worksheet বাছাই", guideSheetBody: "একাধিক sheet থাকলে upload-এর পর সঠিক worksheet বাছুন। Merged header বা header-এর ওপর title row থাকলে আগে workbook-এ ঠিক করে নিন।",
           guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "forms.gle বা সাধারণ Form link দিতে পারেন। Field ID না থাকলে একই Form-এর menu থেকে Get pre-filled link নিয়ে Field ID template-এ দিন।",
           guideMapTitle: "Column mapping", guideMapBody: "প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।",
-          guidePrivacyTitle: "তথ্য ও submission", guidePrivacyBody: "Workbook browser-এ process হয়, server-এ upload হয় না। Backend-এ শুধু Form URL ও question metadata যায়। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন।",
-          guideBackendTitle: "একবারের automatic lookup setup", guideBackendBody: "apps-script/Code.gs কপি করে script.google.com/new-এ project তৈরি করুন। Deploy → New deployment → Web app; Execute as me, access Anyone দিন। UrlFetch permission approve করে /exec URL Automatic field lookup-এ save করুন।",
+          guidePrivacyTitle: "তথ্য ও submission", guidePrivacyBody: "Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।",
           guideNetworkNote: "Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।",
           initialStatus: "শুরু করতে Excel file ও Google Forms link দিন।", libraryUnavailable: "Excel reader load হয়নি। Internet connection দেখে page reload করুন।",
           workbookLoaded: "{count}টি non-empty row পড়া হয়েছে।", workbookMeta: "{size} KB · {count}টি worksheet", workbookError: "Workbook পড়া যায়নি। File format ও worksheet পরীক্ষা করুন।",
           templateInvalid: "Google Forms-এর forms.gle বা docs.google.com/forms link দিন।",
           fieldTemplateInvalid: "Field ID template হিসেবে একই Form-এর Get pre-filled link দিন।",
           fieldTemplateMismatch: "Form link ও Field ID template আলাদা Form-এর। একই Form-এর link ব্যবহার করুন।",
-          needsFieldTemplate: "Link পাওয়া গেছে, কিন্তু browser থেকে question ID পড়া যায় না। Automatic lookup backend set করুন অথবা একই Form-এর prefilled link দিন।",
+          needsFieldTemplate: "Link পাওয়া গেছে, কিন্তু এতে question ID নেই। একই Form-এর Get pre-filled link Field ID template-এ দিন।",
+          resolvingFields: "Google Form-এর question ID খোঁজা হচ্ছে…",
+          resolverPrivate: "এই Form inspect করা যায়নি। এটি public কি না দেখুন, অথবা একই Form-এর prefilled link দিন।",
+          resolverFailed: "Form inspect করা যায়নি। একই Form-এর prefilled link Field ID template-এ দিন।",
           templateNoFields: "এই link-এ entry field পাওয়া যায়নি। Form থেকে pre-filled link নতুন করে নিন।", templateMalformed: "একটি valid pre-filled link paste করুন।",
           fieldCount: "{count} FIELDS", blankField: "এই field ফাঁকা রাখুন", columnForEntry: "{entry} এর Excel column",
           needsSetup: "Excel file, Form link, এবং অন্তত একটি mapping দরকার।", noUnmapped: "Field ID পাওয়া গেছে। Excel column map করুন।",
@@ -491,12 +463,6 @@
           formLinkHint: "Paste a forms.gle share link, a full Form link, or a prefilled link.",
           fieldTemplateLabel: "Field ID template (optional)",
           fieldTemplateHint: "If the link above has no entry IDs, paste a prefilled link from the same Form here.",
-          backendSetupTitle: "Automatic field lookup setup (one time)",
-          backendUrlLabel: "Google Apps Script Web App URL",
-          backendUrlHint: "Deploy apps-script/Code.gs as a Web App and paste its /exec URL. It is saved only in this browser; only the Form URL reaches the backend.",
-          backendSave: "Save URL", backendSaved: "Backend URL saved in this browser.", backendCleared: "Saved backend URL removed.", backendInvalid: "Enter a valid Google Apps Script /exec URL.",
-          backendLookupPending: "Looking up Google Form fields…", backendLookupFailed: "Automatic lookup failed. Check that the Form is public and the backend deployment is correct.",
-          backendLookupDone: "Found {count} questions. Map them to Excel columns.",
           mappingLabel: "Field mapping", mappingHint: "Upload a workbook and add a Google Forms link to map columns here.",
           generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and is not uploaded. This tool never submits forms.",
           resultsTitle: "Review queue", resultsEmpty: "Your generated links will appear here", downloadButton: "Download CSV",
@@ -507,15 +473,17 @@
           guideSheetTitle: "Choose a worksheet", guideSheetBody: "If the workbook has multiple sheets, choose the right one after upload. Remove merged headers or title rows above the headers first.",
           guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "You can use a forms.gle or regular Form link. If it has no field IDs, add a prefilled link from the same Form as the Field ID template.",
           guideMapTitle: "Map columns", guideMapBody: "Match each entry ID to the correct workbook column. Leave a field blank to omit it. Review the mappings before creating links.",
-          guidePrivacyTitle: "Data and submission", guidePrivacyBody: "The workbook is processed in your browser, not uploaded. The backend receives only the Form URL and question metadata. Links and CSV files may contain personal data; store them carefully.",
-          guideBackendTitle: "One-time automatic lookup setup", guideBackendBody: "Copy apps-script/Code.gs into a project at script.google.com/new. Choose Deploy → New deployment → Web app; set Execute as me and access Anyone. Approve the UrlFetch permission, then save the /exec URL in Automatic field lookup.",
+          guidePrivacyTitle: "Data and submission", guidePrivacyBody: "The workbook is processed in your browser, not uploaded to a server. Links and CSV files may contain personal data; store them carefully. Open and verify each link, then submit it yourself.",
           guideNetworkNote: "The Excel-reading library loads from the internet. The workbook stays local, but the page needs an internet connection when opened.",
           initialStatus: "Start by choosing an Excel file and adding a Google Forms link.", libraryUnavailable: "The Excel reader did not load. Check your connection and reload the page.",
           workbookLoaded: "Read {count} non-empty rows.", workbookMeta: "{size} KB · {count} worksheet(s)", workbookError: "Could not read this workbook. Check its file format and worksheet.",
           templateInvalid: "Use a Google Forms forms.gle or docs.google.com/forms link.",
           fieldTemplateInvalid: "Use a Get pre-filled link from the same Google Form as the field-ID template.",
           fieldTemplateMismatch: "The Form link and field-ID template point to different Forms. Use links from the same Form.",
-          needsFieldTemplate: "The browser cannot read question IDs from this share link. Set up the lookup backend or add a prefilled link from the same Form.",
+          needsFieldTemplate: "The Form link has no question IDs. Add a Get pre-filled link from the same Form as the field-ID template.",
+          resolvingFields: "Looking up Google Form question IDs…",
+          resolverPrivate: "This Form could not be inspected. Check that it is public, or add a prefilled link from the same Form.",
+          resolverFailed: "Could not inspect this Form. Add a prefilled link from the same Form as the field-ID template.",
           templateNoFields: "No entry fields were found in this link. Create a new prefilled link in Google Forms.", templateMalformed: "Paste a valid prefilled link.",
           fieldCount: "{count} FIELDS", blankField: "Leave this field blank", columnForEntry: "Excel column for {entry}",
           needsSetup: "Add an Excel file, a Form link, and at least one mapping.", noUnmapped: "Field IDs found. Map them to Excel columns.",
@@ -535,77 +503,18 @@
       let headers = [];
       let rows = [];
       let entryIds = [];
+      let fieldLabels = new Map();
+      let resolvedForm = null;
+      let resolverSequence = 0;
       let generated = [];
       let currentReviewIndex = 0;
       let swipeStart = null;
-      let backendUrl = "";
-      let backendStatusKey = "";
-      let backendStatusType = "";
-      let lookupSequence = 0;
-      let lookupTimer = null;
-      let resolvedFormMetadata = null;
       let currentStatus = { key: "initialStatus", type: "", values: {} };
-
-      try {
-        backendUrl = localStorage.getItem("rowform-backend-url") || "";
-      } catch {}
-      backendUrlInput.value = backendUrl;
-      backendStatusKey = backendUrl ? "backendSaved" : "";
 
       function translate(key, values = {}) {
         let message = messages[language][key] || messages.bn[key] || key;
         for (const [name, value] of Object.entries(values)) message = message.replaceAll(`{${name}}`, String(value));
         return message;
-      }
-
-      function setBackendStatus(key, type = "") {
-        backendStatusKey = key;
-        backendStatusType = type;
-        backendStatus.textContent = key ? translate(key) : "";
-        backendStatus.className = `backend-status ${type}`.trim();
-      }
-
-      function isValidBackendUrl(raw) {
-        try {
-          const url = new URL(raw);
-          return url.protocol === "https:" && url.hostname === "script.google.com" && /^\/macros\/s\/[^/]+\/exec\/?$/.test(url.pathname);
-        } catch {
-          return false;
-        }
-      }
-
-      function lookupFormMetadata(formUrl, endpoint) {
-        return new Promise((resolve, reject) => {
-          const callbackName = `__rowformLookup_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-          const script = document.createElement("script");
-          const cleanUrl = new URL(formUrl);
-          cleanUrl.search = "";
-          cleanUrl.hash = "";
-          const requestUrl = new URL(endpoint);
-          requestUrl.searchParams.set("url", cleanUrl.href);
-          requestUrl.searchParams.set("callback", callbackName);
-          const timeoutId = window.setTimeout(() => finish(new Error("Lookup timed out.")), 20000);
-
-          function finish(error, value) {
-            window.clearTimeout(timeoutId);
-            delete window[callbackName];
-            script.remove();
-            if (error) reject(error);
-            else resolve(value);
-          }
-
-          window[callbackName] = (result) => {
-            if (!result || !result.ok || !Array.isArray(result.fields) || !result.fields.length) {
-              finish(new Error("No public field metadata was returned."));
-              return;
-            }
-            finish(null, result);
-          };
-          script.onerror = () => finish(new Error("Backend request failed."));
-          script.src = requestUrl.href;
-          script.async = true;
-          document.head.append(script);
-        });
       }
 
       function applyLanguage() {
@@ -617,8 +526,6 @@
           element.setAttribute("aria-label", translate(element.dataset.i18nAria));
         });
         for (const button of languageButtons) button.setAttribute("aria-pressed", String(button.dataset.language === language));
-        backendStatus.textContent = backendStatusKey ? translate(backendStatusKey) : "";
-        backendStatus.className = `backend-status ${backendStatusType}`.trim();
         if (!currentFile) {
           fileName.textContent = translate("filePrompt");
           fileMeta.textContent = translate("fileHint");
@@ -630,8 +537,6 @@
           });
         }
         rowCount.textContent = translate("rowCount", { count: rows.length });
-        backendStatus.textContent = backendStatusKey ? translate(backendStatusKey) : "";
-        backendStatus.className = `backend-status ${backendStatusType}`.trim();
         mappingCount.textContent = translate("fieldCount", { count: entryIds.length });
         mappingList.querySelectorAll(".mapping-select").forEach((select) => {
           if (select.options[0]) select.options[0].textContent = translate("blankField");
@@ -739,13 +644,6 @@
         return segments[dataIndex + 1] === "e" ? segments[dataIndex + 2] || "" : segments[dataIndex + 1] || "";
       }
 
-      function normalizedFormUrl(url) {
-        const normalized = new URL(url);
-        normalized.search = "";
-        normalized.hash = "";
-        return normalized.href;
-      }
-
       function parseTemplate() {
         const formRaw = templateInput.value.trim();
         const fieldTemplateRaw = fieldTemplateInput.value.trim();
@@ -764,22 +662,13 @@
 
         const formIds = getEntryIds(form.url);
         const templateIds = getEntryIds(fieldTemplate.url);
-        if (!fieldTemplateRaw && resolvedFormMetadata && resolvedFormMetadata.sourceUrl === normalizedFormUrl(form.url)) {
-          const labels = Object.fromEntries(resolvedFormMetadata.fields.map((field) => [field.entry, field.label]));
-          return {
-            url: new URL(resolvedFormMetadata.formUrl),
-            ids: resolvedFormMetadata.fields.map((field) => field.entry),
-            labels: labels,
-            errorKey: ""
-          };
-        }
         if (formIds.length) {
           const mainFormId = getFormId(form.url);
           const fieldFormId = getFormId(fieldTemplate.url);
           if (fieldTemplateRaw && mainFormId && fieldFormId && mainFormId !== fieldFormId) {
             return { url: null, ids: [], errorKey: "fieldTemplateMismatch" };
           }
-          return { url: form.url, ids: formIds, labels: {}, errorKey: "" };
+          return { url: form.url, ids: formIds, fields: [], errorKey: "" };
         }
         if (templateIds.length) {
           const mainFormId = getFormId(form.url);
@@ -787,7 +676,15 @@
           if (mainFormId && fieldFormId && mainFormId !== fieldFormId) {
             return { url: null, ids: [], errorKey: "fieldTemplateMismatch" };
           }
-          return { url: fieldTemplate.url, ids: templateIds, labels: {}, errorKey: "" };
+          return { url: fieldTemplate.url, ids: templateIds, fields: [], errorKey: "" };
+        }
+        if (resolvedForm && formRaw === resolvedForm.source) {
+          return {
+            url: new URL(resolvedForm.formUrl),
+            ids: resolvedForm.fields.map((field) => field.entry),
+            fields: resolvedForm.fields,
+            errorKey: ""
+          };
         }
         return { url: form.url || fieldTemplate.url, ids: [], errorKey: formRaw ? "needsFieldTemplate" : "fieldTemplateInvalid" };
       }
@@ -795,6 +692,7 @@
       function renderMapping() {
         const parsed = parseTemplate();
         entryIds = parsed.ids;
+        fieldLabels = new Map((parsed.fields || []).map((field) => [field.entry, field.label]));
         mappingCount.textContent = translate("fieldCount", { count: entryIds.length });
         mappingList.replaceChildren();
         if (parsed.errorKey) {
@@ -818,12 +716,12 @@
           row.className = "mapping-row";
           const key = document.createElement("code");
           key.className = "entry-key";
-          const questionLabel = parsed.labels?.[entryId];
-          key.textContent = questionLabel ? `${questionLabel} · ${entryId}` : entryId;
+          key.textContent = fieldLabels.has(entryId) ? `${fieldLabels.get(entryId)} · ${entryId}` : entryId;
+          key.title = fieldLabels.get(entryId) || entryId;
           const select = document.createElement("select");
           select.className = "select mapping-select";
           select.dataset.entry = entryId;
-          select.setAttribute("aria-label", translate("columnForEntry", { entry: questionLabel || entryId }));
+          select.setAttribute("aria-label", translate("columnForEntry", { entry: entryId }));
           const blank = document.createElement("option");
           blank.value = "";
           blank.textContent = translate("blankField");
@@ -1009,77 +907,88 @@
       guideDialog.addEventListener("click", (event) => {
         if (event.target === guideDialog) guideDialog.close();
       });
-      async function resolveFormAutomatically(sourceUrl, sequence) {
-        try {
-          const metadata = await lookupFormMetadata(sourceUrl, backendUrl);
-          if (sequence !== lookupSequence || sourceUrl !== templateInput.value.trim() || fieldTemplateInput.value.trim()) return;
-          resolvedFormMetadata = {
-            sourceUrl: normalizedFormUrl(sourceUrl),
-            formUrl: metadata.formUrl,
-            fields: metadata.fields
+
+      function requestFormMetadata(formUrl) {
+        if (!FORM_RESOLVER_API_URL) return Promise.reject(new Error("RESOLVER_NOT_CONFIGURED"));
+        const requestId = `r${Date.now()}${Math.random().toString(36).slice(2, 10)}`;
+        return new Promise((resolve, reject) => {
+          window.rowformResolverRequests = window.rowformResolverRequests || {};
+          window.rowformResolverCallback = window.rowformResolverCallback || ((id, result) => {
+            const pending = window.rowformResolverRequests[id];
+            if (!pending) return;
+            window.clearTimeout(pending.timeout);
+            pending.script.remove();
+            delete window.rowformResolverRequests[id];
+            resolve(result);
+          });
+
+          const script = document.createElement("script");
+          const separator = FORM_RESOLVER_API_URL.includes("?") ? "&" : "?";
+          const timeout = window.setTimeout(() => {
+            script.remove();
+            delete window.rowformResolverRequests[requestId];
+            reject(new Error("RESOLVER_TIMEOUT"));
+          }, 20000);
+          window.rowformResolverRequests[requestId] = { script, timeout };
+          script.async = true;
+          script.onerror = () => {
+            window.clearTimeout(timeout);
+            delete window.rowformResolverRequests[requestId];
+            script.remove();
+            reject(new Error("RESOLVER_UNAVAILABLE"));
           };
-          renderMapping();
-          invalidateResults();
-          setStatus("backendLookupDone", "success", { count: metadata.fields.length });
-        } catch {
-          if (sequence !== lookupSequence || sourceUrl !== templateInput.value.trim()) return;
-          resolvedFormMetadata = null;
-          renderMapping();
-          invalidateResults();
-          setStatus("backendLookupFailed", "error");
-        }
+          script.src = `${FORM_RESOLVER_API_URL}${separator}requestId=${encodeURIComponent(requestId)}&url=${encodeURIComponent(formUrl)}`;
+          document.head.append(script);
+        });
       }
 
-      function handleFormUrlInput(event) {
-        if (event && event.currentTarget === templateInput) resolvedFormMetadata = null;
-        lookupSequence += 1;
-        const sequence = lookupSequence;
-        window.clearTimeout(lookupTimer);
+      async function handleFormUrlInput() {
+        const requestSequence = ++resolverSequence;
+        resolvedForm = null;
         renderMapping();
         invalidateResults();
         const parsed = parseTemplate();
-        if (parsed.ids.length) {
-          setStatus("noUnmapped");
-          return;
-        }
         if (parsed.errorKey && parsed.errorKey !== "needsFieldTemplate") {
           setStatus(parsed.errorKey, "error");
           return;
         }
-        const formUrl = templateInput.value.trim();
-        if (!formUrl && !fieldTemplateInput.value.trim()) {
+        if (parsed.ids.length) {
+          setStatus("noUnmapped");
+          return;
+        }
+
+        const rawFormUrl = templateInput.value.trim();
+        if (!rawFormUrl && !fieldTemplateInput.value.trim()) {
           setStatus("initialStatus");
           return;
         }
-        if (!formUrl || !backendUrl || !isValidBackendUrl(backendUrl)) {
+        if (!rawFormUrl || !FORM_RESOLVER_API_URL) {
           setStatus(parsed.errorKey || "needsFieldTemplate", "error");
           return;
         }
-        setStatus("backendLookupPending");
-        lookupTimer = window.setTimeout(() => resolveFormAutomatically(formUrl, sequence), 450);
-      }
 
-      backendSaveButton.addEventListener("click", () => {
-        const candidate = backendUrlInput.value.trim();
-        if (!candidate) {
-          backendUrl = "";
-          resolvedFormMetadata = null;
-          try { localStorage.removeItem("rowform-backend-url"); } catch {}
-          setBackendStatus("backendCleared", "success");
-          handleFormUrlInput();
-          return;
+        setStatus("resolvingFields");
+        try {
+          const result = await requestFormMetadata(rawFormUrl);
+          if (requestSequence !== resolverSequence) return;
+          if (!result || !result.ok || !Array.isArray(result.fields) || !result.fields.length) {
+            const code = result && result.error;
+            setStatus(code === "FORM_REQUIRES_ACCESS" || code === "FORM_NOT_PUBLIC" ? "resolverPrivate" : "resolverFailed", "error");
+            return;
+          }
+          resolvedForm = {
+            source: rawFormUrl,
+            formUrl: result.formUrl,
+            fields: result.fields
+          };
+          renderMapping();
+          updateReadyState();
+          setStatus("noUnmapped");
+        } catch (error) {
+          if (requestSequence !== resolverSequence) return;
+          setStatus(error.message === "RESOLVER_NOT_CONFIGURED" ? "needsFieldTemplate" : "resolverFailed", "error");
         }
-        if (!isValidBackendUrl(candidate)) {
-          setBackendStatus("backendInvalid", "error");
-          return;
-        }
-        backendUrl = new URL(candidate).href;
-        backendUrlInput.value = backendUrl;
-        try { localStorage.setItem("rowform-backend-url", backendUrl); } catch {}
-        setBackendStatus("backendSaved", "success");
-        resolvedFormMetadata = null;
-        handleFormUrlInput();
-      });
+      }
       templateInput.addEventListener("input", handleFormUrlInput);
       fieldTemplateInput.addEventListener("input", handleFormUrlInput);
       generateButton.addEventListener("click", () => {
