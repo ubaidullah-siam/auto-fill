@@ -6,9 +6,12 @@ Rowform is a static, browser-only helper for turning Excel rows into Google Form
 
 1. Open `site/index.html` or the deployed GitHub Pages URL.
 2. Choose an `.xlsx` or `.xls` workbook.
-3. In Google Forms, use **Get pre-filled link** with sample answers, then paste that URL into Rowform.
-4. Map each `entry.*` field to an Excel column and generate review links.
+3. Paste a `forms.gle` share link, a full Google Forms link, or a prefilled link into Rowform.
+4. If the link has no `entry.*` IDs, create a **Get pre-filled link** from the same Form and paste it into the Field ID template input.
+5. Map each `entry.*` field to an Excel column and generate review links.
 5. Open each link, review it, and submit it yourself in Google Forms.
+
+Regular and short share links do not expose question IDs to a browser-only site. The matching prefilled link provides those IDs. For short links, verify that the Field ID template belongs to the same Form; the site cannot resolve or compare a `forms.gle` redirect because Google does not allow cross-origin reads.
 
 The workbook and generated links may contain personal data. Keep them private and do not commit the workbook. The root `data.xlsx` is ignored by Git.
 

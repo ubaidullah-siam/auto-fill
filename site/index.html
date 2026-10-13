@@ -67,6 +67,7 @@
     .art-caption { position: absolute; right: 0; bottom: 0; color: var(--muted); font: 9px var(--mono); }
     .upload-label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
     .upload-label-row .field-label { margin: 0; }
+    .field-row { margin-top: 14px; }
     .text-button { min-height: 42px; padding: 0 8px; border: 0; background: transparent; color: var(--forest); font-size: 12px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
     .text-button:hover { color: #b94a32; }
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 22px; border: 1px solid var(--line); background: rgba(251, 252, 248, .74); }
@@ -285,9 +286,15 @@
 
             <div class="divider"></div>
 
-            <label class="field-label" for="template-url" data-i18n="templateLabel">Google Forms prefilled link</label>
-            <p class="field-hint" data-i18n="templateHint">Forms-এর ⋮ menu থেকে “Get pre-filled link” নিন, sample value দিয়ে তৈরি link এখানে paste করুন। এতে field ID পাওয়া যাবে।</p>
-            <input class="control" id="template-url" type="url" inputmode="url" placeholder="https://docs.google.com/forms/.../viewform?entry.123=..." autocomplete="url">
+            <label class="field-label" for="template-url" data-i18n="formLinkLabel">Google Forms link</label>
+            <p class="field-hint" data-i18n="formLinkHint">forms.gle, সাধারণ Form link, বা prefilled link দিন।</p>
+            <input class="control" id="template-url" type="url" inputmode="url" placeholder="https://forms.gle/... or docs.google.com/forms/..." autocomplete="url">
+
+            <div class="field-row">
+              <label class="field-label" for="field-template-url" data-i18n="fieldTemplateLabel">Field ID template (optional)</label>
+              <p class="field-hint" data-i18n="fieldTemplateHint">উপরের link-এ entry ID না থাকলে একই Form-এর Get pre-filled link এখানে দিন।</p>
+              <input class="control" id="field-template-url" type="url" inputmode="url" placeholder="https://docs.google.com/forms/.../viewform?entry.123=..." autocomplete="url">
+            </div>
 
             <div class="divider"></div>
 
@@ -381,6 +388,7 @@
       const sheetSelect = document.querySelector("#sheet-select");
       const rowCount = document.querySelector("#row-count");
       const templateInput = document.querySelector("#template-url");
+      const fieldTemplateInput = document.querySelector("#field-template-url");
       const mappingList = document.querySelector("#mapping-list");
       const mappingCount = document.querySelector("#mapping-count");
       const generateButton = document.querySelector("#generate-button");
@@ -409,26 +417,31 @@
           stepsLabel: "কাজের ধাপ", stepUpload: "Excel file বাছুন", stepMap: "Form field map করুন", stepReview: "Review করে খুলুন",
           setupTitle: "তথ্য সাজান", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "আপলোড নির্দেশিকা",
           filePrompt: "এখানে .xlsx বা .xls ফাইল দিন", fileHint: "প্রথম row-টি column header হিসেবে ধরা হবে", chooseFile: "ফাইল বাছুন",
-          worksheetLabel: "Worksheet", templateLabel: "Google Forms prefilled link",
-          templateHint: "Forms-এর ⋮ menu থেকে “Get pre-filled link” নিন, sample value দিয়ে তৈরি link এখানে paste করুন। এতে field ID পাওয়া যাবে।",
-          mappingLabel: "Field mapping", mappingHint: "Excel file ও prefilled link দিলে mapping এখানে দেখা যাবে।",
+          worksheetLabel: "Worksheet", formLinkLabel: "Google Forms link",
+          formLinkHint: "forms.gle, সাধারণ Form link, বা prefilled link দিন।",
+          fieldTemplateLabel: "Field ID template (optional)",
+          fieldTemplateHint: "উপরের link-এ entry ID না থাকলে একই Form-এর Get pre-filled link এখানে দিন।",
+          mappingLabel: "Field mapping", mappingHint: "Excel file ও Form link দিলে mapping এখানে দেখা যাবে।",
           generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না.",
           resultsTitle: "Review queue", resultsEmpty: "আপনার তৈরি link-গুলো এখানে দেখা যাবে", downloadButton: "লিংক CSV",
-          emptyTitle: "আপনার next row-এর অপেক্ষায়", emptyCopy: "Workbook আর prefilled link যোগ করলে প্রতিটি row-এর review link এখানে আসবে।",
+          emptyTitle: "আপনার next row-এর অপেক্ষায়", emptyCopy: "Workbook আর Google Form link যোগ করলে প্রতিটি row-এর review link এখানে আসবে।",
           footerEdition: "/ 01", footerNote: "প্রতিটি response review করুন, তারপর Google Forms-এ submit করুন।",
           guideTitle: "আপলোড নির্দেশিকা", guideIntro: "ফাইল, Google Form link, এবং mapping-এর নিয়ম এখানে দেখুন।", guideClose: "নির্দেশনা বন্ধ করুন",
           guideFileTitle: "ফাইলের ধরন ও গঠন", guideFileBody: ".xlsx, .xls বা .xlsm workbook ব্যবহার করুন। প্রথম row-তে প্রতিটি column-এর header রাখুন; একেকটি data row হবে একটি review link। ফাঁকা row বাদ যাবে।",
           guideSheetTitle: "Worksheet বাছাই", guideSheetBody: "একাধিক sheet থাকলে upload-এর পর সঠিক worksheet বাছুন। Merged header বা header-এর ওপর title row থাকলে আগে workbook-এ ঠিক করে নিন।",
-          guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "Google Form-এর menu থেকে Get pre-filled link নিন, sample value দিন, তারপর generated link paste করুন। সাধারণ forms.gle share link-এ field ID থাকে না.",
+          guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "forms.gle বা সাধারণ Form link দিতে পারেন। Field ID না থাকলে একই Form-এর menu থেকে Get pre-filled link নিয়ে Field ID template-এ দিন।",
           guideMapTitle: "Column mapping", guideMapBody: "প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।",
           guidePrivacyTitle: "তথ্য ও submission", guidePrivacyBody: "Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।",
           guideNetworkNote: "Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।",
-          initialStatus: "শুরু করতে Excel file ও prefilled link দিন।", libraryUnavailable: "Excel reader load হয়নি। Internet connection দেখে page reload করুন।",
+          initialStatus: "শুরু করতে Excel file ও Google Forms link দিন।", libraryUnavailable: "Excel reader load হয়নি। Internet connection দেখে page reload করুন।",
           workbookLoaded: "{count}টি non-empty row পড়া হয়েছে।", workbookMeta: "{size} KB · {count}টি worksheet", workbookError: "Workbook পড়া যায়নি। File format ও worksheet পরীক্ষা করুন।",
-          templateInvalid: "Google Forms-এর “Get pre-filled link” URL দিন; সাধারণ forms.gle link যথেষ্ট নয়।",
+          templateInvalid: "Google Forms-এর forms.gle বা docs.google.com/forms link দিন।",
+          fieldTemplateInvalid: "Field ID template হিসেবে একই Form-এর Get pre-filled link দিন।",
+          fieldTemplateMismatch: "Form link ও Field ID template আলাদা Form-এর। একই Form-এর link ব্যবহার করুন।",
+          needsFieldTemplate: "Link পাওয়া গেছে, কিন্তু এতে question ID নেই। একই Form-এর Get pre-filled link Field ID template-এ দিন।",
           templateNoFields: "এই link-এ entry field পাওয়া যায়নি। Form থেকে pre-filled link নতুন করে নিন।", templateMalformed: "একটি valid pre-filled link paste করুন।",
           fieldCount: "{count} FIELDS", blankField: "এই field ফাঁকা রাখুন", columnForEntry: "{entry} এর Excel column",
-          needsSetup: "Excel file, prefilled link, এবং অন্তত একটি mapping দরকার।", noUnmapped: "Field ID পাওয়া গেছে। Excel column map করুন।",
+          needsSetup: "Excel file, Form link, এবং অন্তত একটি mapping দরকার।", noUnmapped: "Field ID পাওয়া গেছে। Excel column map করুন।",
           resultCount: "{count}টি review link · submit করার আগে প্রতিটি row দেখুন", generated: "{count}টি link তৈরি হয়েছে। কোনো response submit করা হয়নি।",
           rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Row {row} এর prefilled Google Form খুলুন",
           mobileCounter: "{current} / {total} ROWS", mobileOpen: "Google Form খুলুন ↗", swipePrevious: "আগের row দেখুন", swipeNext: "পরের row দেখুন",
@@ -442,26 +455,31 @@
           stepsLabel: "Workflow steps", stepUpload: "Choose an Excel file", stepMap: "Map form fields", stepReview: "Review and open",
           setupTitle: "Prepare data", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "Upload manual",
           filePrompt: "Drop an .xlsx or .xls file here", fileHint: "The first row is treated as column headers", chooseFile: "Choose file",
-          worksheetLabel: "Worksheet", templateLabel: "Google Forms prefilled link",
-          templateHint: "In Forms, choose ⋮ → “Get pre-filled link”, enter sample values, then paste that generated link here to detect field IDs.",
-          mappingLabel: "Field mapping", mappingHint: "Upload a workbook and paste a prefilled link to map columns here.",
+          worksheetLabel: "Worksheet", formLinkLabel: "Google Forms link",
+          formLinkHint: "Paste a forms.gle share link, a full Form link, or a prefilled link.",
+          fieldTemplateLabel: "Field ID template (optional)",
+          fieldTemplateHint: "If the link above has no entry IDs, paste a prefilled link from the same Form here.",
+          mappingLabel: "Field mapping", mappingHint: "Upload a workbook and add a Google Forms link to map columns here.",
           generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and is not uploaded. This tool never submits forms.",
           resultsTitle: "Review queue", resultsEmpty: "Your generated links will appear here", downloadButton: "Download CSV",
-          emptyTitle: "Ready for your first row", emptyCopy: "Add a workbook and prefilled link to create a review link for each row.",
+          emptyTitle: "Ready for your first row", emptyCopy: "Add a workbook and Google Forms link to create a review link for each row.",
           footerEdition: "/ 01", footerNote: "Review every response, then submit it yourself in Google Forms.",
           guideTitle: "Upload manual", guideIntro: "File, Google Form link, and mapping requirements.", guideClose: "Close upload guide",
           guideFileTitle: "File type and layout", guideFileBody: "Use an .xlsx, .xls, or .xlsm workbook. Put one column header in the first row; each data row becomes one review link. Empty rows are skipped.",
           guideSheetTitle: "Choose a worksheet", guideSheetBody: "If the workbook has multiple sheets, choose the right one after upload. Remove merged headers or title rows above the headers first.",
-          guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "In Google Forms, choose Get pre-filled link, enter sample values, and paste the generated URL here. A regular forms.gle share link has no field IDs.",
+          guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "You can use a forms.gle or regular Form link. If it has no field IDs, add a prefilled link from the same Form as the Field ID template.",
           guideMapTitle: "Map columns", guideMapBody: "Match each entry ID to the correct workbook column. Leave a field blank to omit it. Review the mappings before creating links.",
           guidePrivacyTitle: "Data and submission", guidePrivacyBody: "The workbook is processed in your browser, not uploaded to a server. Links and CSV files may contain personal data; store them carefully. Open and verify each link, then submit it yourself.",
           guideNetworkNote: "The Excel-reading library loads from the internet. The workbook stays local, but the page needs an internet connection when opened.",
-          initialStatus: "Start by choosing an Excel file and adding a prefilled link.", libraryUnavailable: "The Excel reader did not load. Check your connection and reload the page.",
+          initialStatus: "Start by choosing an Excel file and adding a Google Forms link.", libraryUnavailable: "The Excel reader did not load. Check your connection and reload the page.",
           workbookLoaded: "Read {count} non-empty rows.", workbookMeta: "{size} KB · {count} worksheet(s)", workbookError: "Could not read this workbook. Check its file format and worksheet.",
-          templateInvalid: "Use a Google Forms “Get pre-filled link” URL; a regular forms.gle link is not enough.",
+          templateInvalid: "Use a Google Forms forms.gle or docs.google.com/forms link.",
+          fieldTemplateInvalid: "Use a Get pre-filled link from the same Google Form as the field-ID template.",
+          fieldTemplateMismatch: "The Form link and field-ID template point to different Forms. Use links from the same Form.",
+          needsFieldTemplate: "The Form link has no question IDs. Add a Get pre-filled link from the same Form as the field-ID template.",
           templateNoFields: "No entry fields were found in this link. Create a new prefilled link in Google Forms.", templateMalformed: "Paste a valid prefilled link.",
           fieldCount: "{count} FIELDS", blankField: "Leave this field blank", columnForEntry: "Excel column for {entry}",
-          needsSetup: "Add an Excel file, a prefilled link, and at least one mapping.", noUnmapped: "Field IDs found. Map them to Excel columns.",
+          needsSetup: "Add an Excel file, a Form link, and at least one mapping.", noUnmapped: "Field IDs found. Map them to Excel columns.",
           resultCount: "{count} review links · review each row before submitting", generated: "Created {count} links. No form responses were submitted.",
           rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Open prefilled Google Form for row {row}",
           mobileCounter: "{current} / {total} ROWS", mobileOpen: "Open Google Form ↗", swipePrevious: "Show previous row", swipeNext: "Show next row",
@@ -587,20 +605,70 @@
         }
       }
 
-      function parseTemplate() {
-        const raw = templateInput.value.trim();
-        if (!raw) return { url: null, ids: [], errorKey: "" };
+      function parseFormUrl(raw) {
+        if (!raw) return { url: null, errorKey: "" };
         try {
           const url = new URL(raw);
-          if (url.protocol !== "https:" || !/(^|\.)google\.com$/i.test(url.hostname) || !url.pathname.includes("/forms/") || !url.pathname.endsWith("/viewform")) {
-            return { url: null, ids: [], errorKey: "templateInvalid" };
+          const shortLink = url.hostname.toLowerCase() === "forms.gle";
+          const googleFormsLink = /(^|\.)google\.com$/i.test(url.hostname) && url.pathname.includes("/forms/");
+          if (url.protocol !== "https:" || (!shortLink && !googleFormsLink)) {
+            return { url: null, errorKey: "templateInvalid" };
           }
-          const ids = [...new Set([...url.searchParams.keys()].filter((key) => /^entry\.\d+$/.test(key)))];
-          if (!ids.length) return { url, ids: [], errorKey: "templateNoFields" };
-          return { url, ids, errorKey: "" };
+          return { url, errorKey: "" };
         } catch {
-          return { url: null, ids: [], errorKey: "templateMalformed" };
+          return { url: null, errorKey: "templateMalformed" };
         }
+      }
+
+      function getEntryIds(url) {
+        if (!url || url.hostname.toLowerCase() === "forms.gle" || !url.pathname.endsWith("/viewform")) return [];
+        return [...new Set([...url.searchParams.keys()].filter((key) => /^entry\.\d+$/.test(key)))];
+      }
+
+      function getFormId(url) {
+        if (!url || url.hostname.toLowerCase() === "forms.gle") return "";
+        const segments = url.pathname.split("/").filter(Boolean);
+        const formsIndex = segments.indexOf("forms");
+        const dataIndex = segments.indexOf("d", formsIndex + 1);
+        if (dataIndex < 0) return "";
+        return segments[dataIndex + 1] === "e" ? segments[dataIndex + 2] || "" : segments[dataIndex + 1] || "";
+      }
+
+      function parseTemplate() {
+        const formRaw = templateInput.value.trim();
+        const fieldTemplateRaw = fieldTemplateInput.value.trim();
+        if (!formRaw && !fieldTemplateRaw) return { url: null, ids: [], errorKey: "" };
+
+        const form = parseFormUrl(formRaw);
+        if (form.errorKey) return { url: null, ids: [], errorKey: form.errorKey };
+
+        let fieldTemplate = { url: null, errorKey: "" };
+        if (fieldTemplateRaw) {
+          fieldTemplate = parseFormUrl(fieldTemplateRaw);
+          if (fieldTemplate.errorKey || !fieldTemplate.url.pathname.endsWith("/viewform")) {
+            return { url: null, ids: [], errorKey: "fieldTemplateInvalid" };
+          }
+        }
+
+        const formIds = getEntryIds(form.url);
+        const templateIds = getEntryIds(fieldTemplate.url);
+        if (formIds.length) {
+          const mainFormId = getFormId(form.url);
+          const fieldFormId = getFormId(fieldTemplate.url);
+          if (fieldTemplateRaw && mainFormId && fieldFormId && mainFormId !== fieldFormId) {
+            return { url: null, ids: [], errorKey: "fieldTemplateMismatch" };
+          }
+          return { url: form.url, ids: formIds, errorKey: "" };
+        }
+        if (templateIds.length) {
+          const mainFormId = getFormId(form.url);
+          const fieldFormId = getFormId(fieldTemplate.url);
+          if (mainFormId && fieldFormId && mainFormId !== fieldFormId) {
+            return { url: null, ids: [], errorKey: "fieldTemplateMismatch" };
+          }
+          return { url: fieldTemplate.url, ids: templateIds, errorKey: "" };
+        }
+        return { url: form.url || fieldTemplate.url, ids: [], errorKey: formRaw ? "needsFieldTemplate" : "fieldTemplateInvalid" };
       }
 
       function renderMapping() {
@@ -819,13 +887,16 @@
       guideDialog.addEventListener("click", (event) => {
         if (event.target === guideDialog) guideDialog.close();
       });
-      templateInput.addEventListener("input", () => {
+      function handleFormUrlInput() {
         renderMapping();
         invalidateResults();
         const parsed = parseTemplate();
         if (parsed.errorKey) setStatus(parsed.errorKey, "error");
-        else setStatus("noUnmapped");
-      });
+        else if (parsed.ids.length) setStatus("noUnmapped");
+        else setStatus(templateInput.value.trim() || fieldTemplateInput.value.trim() ? "needsFieldTemplate" : "initialStatus");
+      }
+      templateInput.addEventListener("input", handleFormUrlInput);
+      fieldTemplateInput.addEventListener("input", handleFormUrlInput);
       generateButton.addEventListener("click", () => {
         const parsed = parseTemplate();
         if (parsed.errorKey || !rows.length || !mappings().length) {
