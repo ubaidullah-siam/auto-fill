@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f0f4ed">
+  <meta name="description" content="Excel rows থেকে Google Forms-এর prefilled review link তৈরি করুন।">
+  <title>Rowform | Sheet to Form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f0f4ed;
+      --white: #fbfcf8;
+      --ink: #172b25;
+      --muted: #697871;
+      --line: #d7dfd7;
+      --forest: #17483d;
+      --mint: #d6efb4;
+      --coral: #ef7353;
+      --sun: #f2c95d;
+      --mono: "DM Mono", monospace;
+      --sans: "Manrope", "Noto Sans Bengali", sans-serif;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background-color: var(--paper);
+      background-image: linear-gradient(rgba(23, 72, 61, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 72, 61, .035) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1240px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { height: 72px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-size: 15px; font-weight: 800; letter-spacing: 0; }
+    .brand-mark { width: 28px; height: 28px; display: grid; place-items: center; color: var(--forest); background: var(--mint); border: 1px solid var(--forest); border-radius: 8px 8px 8px 2px; font: 500 14px var(--mono); }
+    .top-actions { display: flex; align-items: center; gap: 16px; }
+    .local-note { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .local-dot { width: 8px; height: 8px; border-radius: 50%; background: #538b5c; box-shadow: 0 0 0 3px #dcebd8; }
+    .language-switch { display: inline-flex; padding: 3px; border: 1px solid var(--line); background: var(--white); }
+    .language-button { min-width: 52px; min-height: 42px; padding: 0 9px; border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .language-button[aria-pressed="true"] { background: var(--forest); color: white; }
+    .intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 44px 0 28px; }
+    .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; color: var(--forest); font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0; }
+    .eyebrow::before { content: ""; width: 20px; height: 2px; background: var(--coral); }
+    h1 { margin: 0; font-size: 40px; line-height: 1.13; font-weight: 800; letter-spacing: 0; }
+    .intro-side { display: flex; max-width: 440px; align-items: center; gap: 16px; }
+    .intro-copy { max-width: 220px; margin: 0 0 4px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .intro-art { position: relative; flex: 0 0 185px; height: 132px; perspective: 600px; }
+    .art-sheet { position: absolute; width: 94px; height: 112px; padding: 16px 11px; border: 1px solid var(--forest); background: #e3f0d3; box-shadow: 7px 7px 0 rgba(23, 72, 61, .17); transform: rotateX(8deg) rotateY(-15deg) rotateZ(-8deg); transform-style: preserve-3d; }
+    .art-sheet.back { top: 3px; left: 12px; background: var(--mint); }
+    .art-sheet.front { top: 18px; left: 64px; z-index: 1; background: #fffefa; transform: rotateX(8deg) rotateY(12deg) rotateZ(7deg); }
+    .art-sheet b { display: block; margin-bottom: 13px; color: var(--forest); font: 500 9px var(--mono); }
+    .art-line { display: block; height: 5px; margin: 8px 0; background: #c6d7c7; }
+    .art-line.short { width: 62%; }
+    .art-line.accent { width: 75%; background: #f1b58d; }
+    .art-bridge { position: absolute; top: 52px; right: 0; z-index: 2; color: var(--coral); font: 18px var(--mono); transform: translateZ(32px); }
+    .art-caption { position: absolute; right: 0; bottom: 0; color: var(--muted); font: 9px var(--mono); }
+    .upload-label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .upload-label-row .field-label { margin: 0; }
+    .text-button { min-height: 42px; padding: 0 8px; border: 0; background: transparent; color: var(--forest); font-size: 12px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+    .text-button:hover { color: #b94a32; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 22px; border: 1px solid var(--line); background: rgba(251, 252, 248, .74); }
+    .step { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 10px 18px; border-right: 1px solid var(--line); }
+    .step:last-child { border-right: 0; }
+    .step-number { color: var(--coral); font: 500 12px var(--mono); }
+    .step span:last-child { font-size: 14px; font-weight: 700; }
+    .layout { display: grid; grid-template-columns: minmax(330px, .88fr) minmax(0, 1.42fr); align-items: start; gap: 22px; padding-bottom: 54px; }
+    .panel { border: 1px solid var(--line); background: var(--white); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 19px; border-bottom: 1px solid var(--line); }
+    .panel-title { margin: 0; font-size: 14px; font-weight: 800; }
+    .panel-index { color: var(--muted); font: 11px var(--mono); }
+    .setup-body { padding: 19px; }
+    .field-label { display: block; margin: 0 0 8px; font-size: 14px; font-weight: 800; }
+    .field-hint { margin: -2px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .upload { display: flex; align-items: center; gap: 14px; min-height: 90px; padding: 15px; border: 1px dashed #92a79a; background: #f5f8f2; transition: border-color .18s, background .18s; }
+    .upload.dragging { border-color: var(--forest); background: #e7f1dc; }
+    .upload-glyph { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--forest); font: 16px var(--mono); }
+    .upload-copy { min-width: 0; flex: 1; }
+    .upload-copy strong { display: block; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid var(--forest); background: var(--forest); color: white; font-size: 12px; font-weight: 800; transition: transform .16s, background .16s; }
+    .button:hover:not(:disabled) { transform: translateY(-1px); background: #236452; }
+    .button:disabled { cursor: not-allowed; opacity: .42; }
+    .button.secondary { background: transparent; color: var(--forest); }
+    .button.secondary:hover:not(:disabled) { background: #edf4e9; }
+    .hidden-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .divider { height: 1px; margin: 20px 0; background: var(--line); }
+    .control { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #cbd6cd; border-radius: 0; outline: 0; background: #fff; color: var(--ink); font-size: 14px; }
+    .control:focus, .select:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(23, 72, 61, .11); }
+    .sheet-row { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; margin-top: 14px; }
+    .sheet-row .field-label { margin-bottom: 7px; }
+    .small-stat { padding: 10px 0 9px; color: var(--muted); font: 11px var(--mono); white-space: nowrap; }
+    .mapping-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .mapping-title .field-label { margin: 0; }
+    .mapping-list { display: grid; gap: 8px; }
+    .mapping-row { display: grid; grid-template-columns: minmax(100px, .82fr) minmax(130px, 1fr); align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid #e1e7e0; background: #f8faf6; }
+    .entry-key { overflow: hidden; color: var(--forest); font: 11px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .select { width: 100%; min-width: 0; min-height: 44px; padding: 8px 10px; border: 1px solid #d4ddd4; border-radius: 0; outline: 0; background: white; color: var(--ink); font-size: 13px; }
+    .generate { width: 100%; min-height: 48px; margin-top: 18px; font-size: 14px; }
+    .status { min-height: 21px; margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .status.error { color: #a53e2a; }
+    .status.success { color: var(--forest); }
+    .privacy { display: flex; align-items: start; gap: 9px; margin: 17px 0 0; padding: 12px; background: #eff5e9; color: #43604f; font-size: 12px; line-height: 1.6; }
+    .privacy-mark { flex: 0 0 auto; color: var(--forest); font: 12px var(--mono); }
+    .results-panel { min-height: 590px; }
+    .results-head { align-items: start; }
+    .results-heading { min-width: 0; }
+    .results-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .result-actions { display: flex; gap: 7px; }
+    .result-actions .button { min-height: 40px; padding: 0 12px; font-size: 12px; white-space: nowrap; }
+    .empty { display: grid; min-height: 480px; place-items: center; padding: 40px; text-align: center; }
+    .empty-art { position: relative; width: 116px; height: 106px; margin: 0 auto 23px; }
+    .sheet-shape { position: absolute; left: 10px; top: 10px; width: 67px; height: 82px; padding: 12px 9px; transform: rotate(-7deg); border: 1px solid var(--forest); background: var(--mint); box-shadow: 4px 4px 0 var(--forest); }
+    .sheet-shape i { display: block; height: 5px; margin: 5px 0; background: rgba(23, 72, 61, .35); }
+    .form-shape { position: absolute; right: 6px; bottom: 8px; width: 58px; height: 72px; padding: 13px 9px; transform: rotate(7deg); border: 1px solid var(--ink); background: #fff; box-shadow: 3px 3px 0 var(--coral); }
+    .form-shape i { display: block; height: 4px; margin: 6px 0; background: #ccd6cf; }
+    .form-shape i:first-child { width: 24px; background: var(--coral); }
+    .empty h2 { margin: 0; font-size: 18px; }
+    .empty p { max-width: 340px; margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .table-wrap { overflow: auto; max-height: 540px; }
+    .mobile-review { display: none; padding: 14px; }
+    .mobile-review-card { padding: 17px; border: 1px solid var(--line); background: #f8faf6; touch-action: pan-y; }
+    .mobile-review-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+    .mobile-counter { color: var(--forest); font: 11px var(--mono); }
+    .swipe-mark { color: var(--coral); font: 18px var(--mono); }
+    .mobile-fields { display: grid; gap: 0; }
+    .review-field { display: grid; grid-template-columns: minmax(90px, .8fr) minmax(0, 1.2fr); gap: 12px; align-items: start; padding: 14px 0; border-bottom: 1px solid #e3e9e1; }
+    .review-field span { color: var(--muted); font-size: 12px; }
+    .review-field strong { min-width: 0; color: var(--ink); font-size: 14px; font-weight: 700; text-align: right; overflow-wrap: anywhere; }
+    .mobile-open { width: 100%; margin-top: 16px; text-decoration: none; }
+    .mobile-review-controls { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .swipe-control { min-width: 56px; min-height: 48px; font-size: 19px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .mobile-review-card.is-entering[data-direction="next"] { animation: review-in-next .22s ease-out both; }
+    .mobile-review-card.is-entering[data-direction="previous"] { animation: review-in-previous .22s ease-out both; }
+    @keyframes review-in-next { from { opacity: .25; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes review-in-previous { from { opacity: .25; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { position: sticky; top: 0; z-index: 1; padding: 11px 14px; border-bottom: 1px solid var(--line); background: #f4f7f1; color: var(--muted); font: 11px var(--mono); }
+    td { max-width: 190px; padding: 12px 14px; overflow: hidden; border-bottom: 1px solid #e8ece6; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    tbody tr:hover { background: #f6f9f3; }
+    .row-number { width: 52px; color: var(--muted); font: 10px var(--mono); }
+    .open-link { color: var(--forest); font-weight: 800; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .open-link:hover { color: #b94a32; }
+    .empty-cell { padding: 30px 14px; color: var(--muted); text-align: center; }
+    .footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 17px 0 25px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .footer strong { color: var(--ink); }
+    .mono { font-family: var(--mono); }
+    .guide-dialog { width: min(620px, calc(100% - 28px)); max-height: min(82vh, 760px); padding: 0; overflow: hidden; border: 1px solid var(--forest); background: var(--white); color: var(--ink); box-shadow: 12px 12px 0 rgba(23, 72, 61, .2); }
+    .guide-dialog::backdrop { background: rgba(16, 35, 29, .48); backdrop-filter: blur(3px); }
+    .guide-head { display: flex; align-items: start; justify-content: space-between; gap: 16px; padding: 20px 22px 17px; border-bottom: 1px solid var(--line); }
+    .guide-head h2 { margin: 0; font-size: 19px; }
+    .guide-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .guide-close { width: 40px; height: 40px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 20px; }
+    .guide-body { max-height: calc(min(82vh, 760px) - 92px); padding: 6px 22px 22px; overflow: auto; }
+    .guide-step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+    .guide-step:last-child { border-bottom: 0; }
+    .guide-number { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--forest); border-radius: 50%; background: var(--mint); color: var(--forest); font: 11px var(--mono); }
+    .guide-step h3 { margin: 1px 0 5px; font-size: 14px; }
+    .guide-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .guide-step code { padding: 1px 4px; background: #edf2e9; color: var(--forest); font: 11px var(--mono); }
+    .guide-note { margin-top: 14px; padding: 12px; border-left: 3px solid var(--coral); background: #fff3e9; color: #624c3b; font-size: 12px; line-height: 1.7; }
+    .panel { animation: arrive .42s both; }
+    .results-panel { animation-delay: .08s; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .results-panel { min-height: 420px; }
+      .empty { min-height: 330px; }
+      .table-wrap { max-height: 460px; }
+      .intro-side { max-width: 400px; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 28px, 520px); }
+      .topbar { height: 60px; }
+      .top-actions { gap: 8px; }
+      .local-note { display: none; }
+      .language-button { min-width: 45px; min-height: 42px; }
+      .intro { display: block; padding: 32px 0 21px; }
+      h1 { font-size: 34px; }
+      .intro-side { min-width: 0; margin-top: 12px; gap: 8px; }
+      .intro-copy { min-width: 0; flex: 1; margin-top: 0; font-size: 12px; }
+      .intro-art { flex-basis: 138px; height: 106px; transform: scale(.72); transform-origin: right center; margin-left: 0; }
+      .steps { grid-template-columns: 1fr; }
+      .step { min-height: 43px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .step:last-child { border-bottom: 0; }
+      .layout { gap: 14px; }
+      .panel-head { padding: 14px; }
+      .setup-body { padding: 14px; }
+      .upload { align-items: start; flex-wrap: wrap; }
+      .upload-copy { padding-top: 3px; }
+      .upload .button { margin-left: 56px; }
+      .mapping-row { grid-template-columns: 1fr; gap: 6px; }
+      .table-wrap:not([hidden]) { display: none; }
+      .mobile-review:not([hidden]) { display: block; }
+      .results-head { align-items: start; flex-wrap: wrap; }
+      .result-actions { width: 100%; }
+      .result-actions .button { flex: 1; }
+      .footer { align-items: start; flex-direction: column; }
+      .guide-head { padding: 16px; }
+      .guide-body { padding: 4px 16px 16px; }
+      th, td { padding-right: 10px; padding-left: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      .panel { animation: none; }
+      .art-sheet { transform: none !important; }
+      .mobile-review-card.is-entering { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Rowform home" data-i18n-aria="brandHome"><span class="brand-mark">rf</span><span>rowform</span></a>
+      <div class="top-actions">
+        <div class="local-note"><span class="local-dot" aria-hidden="true"></span><span data-i18n="localNote">ফাইল আপনার browser-এই থাকে</span></div>
+        <div class="language-switch" role="group" aria-label="Language" data-i18n-aria="languageLabel">
+          <button class="language-button" type="button" data-language="bn" aria-pressed="true">বাংলা</button>
+          <button class="language-button" type="button" data-language="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow">SHEET → FORM WORKSPACE</p>
+          <h1 id="page-title"><span data-i18n="headlineFirst">শিট থেকে ফর্ম।</span><br><span data-i18n="headlineSecond">আপনার review-তে।</span></h1>
+        </div>
+        <div class="intro-side">
+          <p class="intro-copy" data-i18n="introCopy">Excel-এর row-গুলোকে Google Forms-এর prefilled link-এ সাজান। প্রতিটি response দেখে তারপর নিজে submit করুন।</p>
+          <div class="intro-art" aria-hidden="true">
+            <div class="art-sheet back"><b>01 / SHEET</b><i class="art-line"></i><i class="art-line short"></i><i class="art-line"></i><i class="art-line accent"></i></div>
+            <div class="art-sheet front"><b>02 / FORM</b><i class="art-line accent"></i><i class="art-line"></i><i class="art-line short"></i><i class="art-line"></i></div>
+            <span class="art-bridge">↗</span>
+            <span class="art-caption">ROW → REVIEW</span>
+          </div>
+        </div>
+      </section>
+
+      <nav class="steps" aria-label="কাজের ধাপ" data-i18n-aria="stepsLabel">
+        <div class="step"><span class="step-number">01</span><span data-i18n="stepUpload">Excel file বাছুন</span></div>
+        <div class="step"><span class="step-number">02</span><span data-i18n="stepMap">Form field map করুন</span></div>
+        <div class="step"><span class="step-number">03</span><span data-i18n="stepReview">Review করে খুলুন</span></div>
+      </nav>
+
+      <div class="layout">
+        <section class="panel" aria-labelledby="setup-title">
+          <div class="panel-head">
+            <h2 class="panel-title" id="setup-title" data-i18n="setupTitle">তথ্য সাজান</h2>
+            <span class="panel-index" data-i18n="setupIndex">SETUP / 01</span>
+          </div>
+          <div class="setup-body">
+            <div class="upload-label-row">
+              <label class="field-label" for="file-input" data-i18n="workbookLabel">Excel workbook</label>
+              <button class="text-button" id="guide-open" type="button" data-i18n="uploadGuideButton">ফাইল দেওয়ার নিয়ম</button>
+            </div>
+            <div class="upload" id="drop-zone">
+              <span class="upload-glyph" aria-hidden="true">↥</span>
+              <div class="upload-copy">
+                <strong id="file-name" data-i18n="filePrompt">এখানে .xlsx বা .xls ফাইল দিন</strong>
+                <small id="file-meta" data-i18n="fileHint">প্রথম row-টি column header হিসেবে ধরা হবে</small>
+              </div>
+              <label class="button secondary" for="file-input" data-i18n="chooseFile">ফাইল বাছুন</label>
+              <input class="hidden-input" id="file-input" type="file" accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+            </div>
+            <div class="sheet-row" id="sheet-row" hidden>
+              <div>
+                <label class="field-label" for="sheet-select" data-i18n="worksheetLabel">Worksheet</label>
+                <select class="select" id="sheet-select" aria-label="Worksheet বাছুন" data-i18n-aria="worksheetLabel"></select>
+              </div>
+              <div class="small-stat" id="row-count">0 ROWS</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <label class="field-label" for="template-url" data-i18n="templateLabel">Google Forms prefilled link</label>
+            <p class="field-hint" data-i18n="templateHint">Forms-এর ⋮ menu থেকে “Get pre-filled link” নিন, sample value দিয়ে তৈরি link এখানে paste করুন। এতে field ID পাওয়া যাবে।</p>
+            <input class="control" id="template-url" type="url" inputmode="url" placeholder="https://docs.google.com/forms/.../viewform?entry.123=..." autocomplete="url">
+
+            <div class="divider"></div>
+
+            <div class="mapping-title">
+              <label class="field-label" for="mapping-list" data-i18n="mappingLabel">Field mapping</label>
+              <span class="panel-index" id="mapping-count">0 FIELDS</span>
+            </div>
+            <div class="mapping-list" id="mapping-list">
+              <p class="field-hint" data-i18n="mappingHint">Excel file ও prefilled link দিলে mapping এখানে দেখা যাবে।</p>
+            </div>
+
+            <button class="button generate" id="generate-button" type="button" disabled><span data-i18n="generateButton">Review link তৈরি করুন</span><span aria-hidden="true">↗</span></button>
+            <p class="status" id="status" role="status" aria-live="polite" data-i18n="initialStatus">শুরু করতে Excel file ও prefilled link দিন।</p>
+            <p class="privacy"><span class="privacy-mark" aria-hidden="true">[i]</span><span data-i18n="privacyNote">Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না।</span></p>
+          </div>
+        </section>
+
+        <section class="panel results-panel" aria-labelledby="results-title">
+          <div class="panel-head results-head">
+            <div class="results-heading">
+              <h2 class="panel-title" id="results-title" data-i18n="resultsTitle">Review queue</h2>
+              <p id="results-summary">আপনার তৈরি link-গুলো এখানে দেখা যাবে</p>
+            </div>
+            <div class="result-actions" id="result-actions" hidden>
+              <button class="button secondary" id="download-button" type="button" data-i18n="downloadButton">লিংক CSV</button>
+            </div>
+          </div>
+          <div class="empty" id="empty-state">
+            <div>
+              <div class="empty-art" aria-hidden="true"><span class="sheet-shape"><i></i><i></i><i></i><i></i></span><span class="form-shape"><i></i><i></i><i></i><i></i></span></div>
+              <h2 data-i18n="emptyTitle">আপনার next row-এর অপেক্ষায়</h2>
+              <p data-i18n="emptyCopy">Workbook আর prefilled link যোগ করলে প্রতিটি row-এর review link এখানে আসবে।</p>
+            </div>
+          </div>
+          <div class="table-wrap" id="table-wrap" hidden>
+            <table>
+              <thead id="result-head"></thead>
+              <tbody id="result-body"></tbody>
+            </table>
+          </div>
+          <div class="mobile-review" id="mobile-review" hidden>
+            <article class="mobile-review-card" id="mobile-review-card" role="group" aria-describedby="swipe-help" aria-live="polite">
+              <div class="mobile-review-head">
+                <span class="mobile-counter" id="mobile-counter"></span>
+                <span class="swipe-mark" aria-hidden="true">↔</span>
+              </div>
+              <div class="mobile-fields" id="mobile-fields"></div>
+              <a class="button mobile-open" id="mobile-open" target="_blank" rel="noopener noreferrer" data-i18n="mobileOpen">Google Form খুলুন ↗</a>
+            </article>
+            <div class="mobile-review-controls">
+              <button class="button secondary swipe-control" id="mobile-prev" type="button" aria-label="আগের row দেখুন" data-i18n-aria="swipePrevious"><span aria-hidden="true">←</span></button>
+              <button class="button secondary swipe-control" id="mobile-next" type="button" aria-label="পরের row দেখুন" data-i18n-aria="swipeNext"><span aria-hidden="true">→</span></button>
+            </div>
+            <p class="sr-only" id="swipe-help" data-i18n="swipeInstructions">Swipe left or right to change rows, or use the previous and next buttons.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <dialog class="guide-dialog" id="guide-dialog" aria-labelledby="guide-title">
+      <div class="guide-head">
+        <div>
+          <h2 id="guide-title" data-i18n="guideTitle">ফাইল ও Form প্রস্তুতির নিয়ম</h2>
+          <p data-i18n="guideIntro">সঠিক workbook ও prefilled link দিলে mapping সহজ হবে।</p>
+        </div>
+        <button class="guide-close" id="guide-close" type="button" aria-label="নির্দেশনা বন্ধ করুন" data-i18n-aria="guideClose">×</button>
+      </div>
+      <div class="guide-body">
+        <section class="guide-step"><span class="guide-number">01</span><div><h3 data-i18n="guideFileTitle">ফাইলের ধরন ও গঠন</h3><p data-i18n="guideFileBody">.xlsx, .xls বা .xlsm workbook ব্যবহার করুন। প্রথম row-তে প্রতিটি column-এর header রাখুন; একেকটি data row হবে একটি review link। ফাঁকা row বাদ যাবে।</p></div></section>
+        <section class="guide-step"><span class="guide-number">02</span><div><h3 data-i18n="guideSheetTitle">Worksheet বাছাই</h3><p data-i18n="guideSheetBody">একাধিক sheet থাকলে upload-এর পর সঠিক worksheet বাছুন। Merged header বা header-এর ওপর title row থাকলে আগে workbook-এ ঠিক করে নিন।</p></div></section>
+        <section class="guide-step"><span class="guide-number">03</span><div><h3 data-i18n="guideLinkTitle">সঠিক Google Forms link</h3><p data-i18n="guideLinkBody">Google Form-এর menu থেকে <code>Get pre-filled link</code> নিন, sample value দিন, তারপর generated link paste করুন। সাধারণ <code>forms.gle</code> share link-এ field ID থাকে না।</p></div></section>
+        <section class="guide-step"><span class="guide-number">04</span><div><h3 data-i18n="guideMapTitle">Column mapping</h3><p data-i18n="guideMapBody">প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।</p></div></section>
+        <section class="guide-step"><span class="guide-number">05</span><div><h3 data-i18n="guidePrivacyTitle">তথ্য ও submission</h3><p data-i18n="guidePrivacyBody">Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।</p></div></section>
+        <p class="guide-note" data-i18n="guideNetworkNote">Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।</p>
+      </div>
+    </dialog>
+
+    <footer class="footer">
+      <span><strong>rowform</strong> <span class="mono" data-i18n="footerEdition">/ 01</span></span>
+      <span data-i18n="footerNote">প্রতিটি response review করুন, তারপর Google Forms-এ submit করুন।</span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const fileInput = document.querySelector("#file-input");
+      const fileName = document.querySelector("#file-name");
+      const fileMeta = document.querySelector("#file-meta");
+      const dropZone = document.querySelector("#drop-zone");
+      const sheetRow = document.querySelector("#sheet-row");
+      const sheetSelect = document.querySelector("#sheet-select");
+      const rowCount = document.querySelector("#row-count");
+      const templateInput = document.querySelector("#template-url");
+      const mappingList = document.querySelector("#mapping-list");
+      const mappingCount = document.querySelector("#mapping-count");
+      const generateButton = document.querySelector("#generate-button");
+      const status = document.querySelector("#status");
+      const resultActions = document.querySelector("#result-actions");
+      const emptyState = document.querySelector("#empty-state");
+      const tableWrap = document.querySelector("#table-wrap");
+      const resultHead = document.querySelector("#result-head");
+      const resultBody = document.querySelector("#result-body");
+      const resultsSummary = document.querySelector("#results-summary");
+      const downloadButton = document.querySelector("#download-button");
+      const mobileReview = document.querySelector("#mobile-review");
+      const mobileReviewCard = document.querySelector("#mobile-review-card");
+      const mobileCounter = document.querySelector("#mobile-counter");
+      const mobileFields = document.querySelector("#mobile-fields");
+      const mobileOpen = document.querySelector("#mobile-open");
+      const mobilePrev = document.querySelector("#mobile-prev");
+      const mobileNext = document.querySelector("#mobile-next");
+      const guideDialog = document.querySelector("#guide-dialog");
+      const languageButtons = [...document.querySelectorAll("[data-language]")];
+      const messages = {
+        bn: {
+          brandHome: "Rowform home", languageLabel: "ভাষা নির্বাচন", localNote: "ফাইল আপনার browser-এই থাকে",
+          eyebrow: "SHEET → FORM WORKSPACE", headlineFirst: "শিট থেকে ফর্ম।", headlineSecond: "আপনার review-তে।",
+          introCopy: "Excel-এর row-গুলোকে Google Forms-এর prefilled link-এ সাজান। প্রতিটি response দেখে তারপর নিজে submit করুন।",
+          stepsLabel: "কাজের ধাপ", stepUpload: "Excel file বাছুন", stepMap: "Form field map করুন", stepReview: "Review করে খুলুন",
+          setupTitle: "তথ্য সাজান", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "আপলোড নির্দেশিকা",
+          filePrompt: "এখানে .xlsx বা .xls ফাইল দিন", fileHint: "প্রথম row-টি column header হিসেবে ধরা হবে", chooseFile: "ফাইল বাছুন",
+          worksheetLabel: "Worksheet", templateLabel: "Google Forms prefilled link",
+          templateHint: "Forms-এর ⋮ menu থেকে “Get pre-filled link” নিন, sample value দিয়ে তৈরি link এখানে paste করুন। এতে field ID পাওয়া যাবে।",
+          mappingLabel: "Field mapping", mappingHint: "Excel file ও prefilled link দিলে mapping এখানে দেখা যাবে।",
+          generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না.",
+          resultsTitle: "Review queue", resultsEmpty: "আপনার তৈরি link-গুলো এখানে দেখা যাবে", downloadButton: "লিংক CSV",
+          emptyTitle: "আপনার next row-এর অপেক্ষায়", emptyCopy: "Workbook আর prefilled link যোগ করলে প্রতিটি row-এর review link এখানে আসবে।",
+          footerEdition: "/ 01", footerNote: "প্রতিটি response review করুন, তারপর Google Forms-এ submit করুন।",
+          guideTitle: "আপলোড নির্দেশিকা", guideIntro: "ফাইল, Google Form link, এবং mapping-এর নিয়ম এখানে দেখুন।", guideClose: "নির্দেশনা বন্ধ করুন",
+          guideFileTitle: "ফাইলের ধরন ও গঠন", guideFileBody: ".xlsx, .xls বা .xlsm workbook ব্যবহার করুন। প্রথম row-তে প্রতিটি column-এর header রাখুন; একেকটি data row হবে একটি review link। ফাঁকা row বাদ যাবে।",
+          guideSheetTitle: "Worksheet বাছাই", guideSheetBody: "একাধিক sheet থাকলে upload-এর পর সঠিক worksheet বাছুন। Merged header বা header-এর ওপর title row থাকলে আগে workbook-এ ঠিক করে নিন।",
+          guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "Google Form-এর menu থেকে Get pre-filled link নিন, sample value দিন, তারপর generated link paste করুন। সাধারণ forms.gle share link-এ field ID থাকে না.",
+          guideMapTitle: "Column mapping", guideMapBody: "প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।",
+          guidePrivacyTitle: "তথ্য ও submission", guidePrivacyBody: "Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।",
+          guideNetworkNote: "Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।",
+          initialStatus: "শুরু করতে Excel file ও prefilled link দিন।", libraryUnavailable: "Excel reader load হয়নি। Internet connection দেখে page reload করুন।",
+          workbookLoaded: "{count}টি non-empty row পড়া হয়েছে।", workbookMeta: "{size} KB · {count}টি worksheet", workbookError: "Workbook পড়া যায়নি। File format ও worksheet পরীক্ষা করুন।",
+          templateInvalid: "Google Forms-এর “Get pre-filled link” URL দিন; সাধারণ forms.gle link যথেষ্ট নয়।",
+          templateNoFields: "এই link-এ entry field পাওয়া যায়নি। Form থেকে pre-filled link নতুন করে নিন।", templateMalformed: "একটি valid pre-filled link paste করুন।",
+          fieldCount: "{count} FIELDS", blankField: "এই field ফাঁকা রাখুন", columnForEntry: "{entry} এর Excel column",
+          needsSetup: "Excel file, prefilled link, এবং অন্তত একটি mapping দরকার।", noUnmapped: "Field ID পাওয়া গেছে। Excel column map করুন।",
+          resultCount: "{count}টি review link · submit করার আগে প্রতিটি row দেখুন", generated: "{count}টি link তৈরি হয়েছে। কোনো response submit করা হয়নি।",
+          rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Row {row} এর prefilled Google Form খুলুন",
+          mobileCounter: "{current} / {total} ROWS", mobileOpen: "Google Form খুলুন ↗", swipePrevious: "আগের row দেখুন", swipeNext: "পরের row দেখুন",
+          swipeInstructions: "আগের বা পরের row দেখতে swipe করুন, অথবা arrow button ব্যবহার করুন।",
+          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS"
+        },
+        en: {
+          brandHome: "Rowform home", languageLabel: "Choose language", localNote: "Your file stays in this browser",
+          eyebrow: "SHEET → FORM WORKSPACE", headlineFirst: "Sheets to forms.", headlineSecond: "With your review.",
+          introCopy: "Turn Excel rows into Google Forms prefilled links. Review every response, then submit it yourself.",
+          stepsLabel: "Workflow steps", stepUpload: "Choose an Excel file", stepMap: "Map form fields", stepReview: "Review and open",
+          setupTitle: "Prepare data", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "Upload manual",
+          filePrompt: "Drop an .xlsx or .xls file here", fileHint: "The first row is treated as column headers", chooseFile: "Choose file",
+          worksheetLabel: "Worksheet", templateLabel: "Google Forms prefilled link",
+          templateHint: "In Forms, choose ⋮ → “Get pre-filled link”, enter sample values, then paste that generated link here to detect field IDs.",
+          mappingLabel: "Field mapping", mappingHint: "Upload a workbook and paste a prefilled link to map columns here.",
+          generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and is not uploaded. This tool never submits forms.",
+          resultsTitle: "Review queue", resultsEmpty: "Your generated links will appear here", downloadButton: "Download CSV",
+          emptyTitle: "Ready for your first row", emptyCopy: "Add a workbook and prefilled link to create a review link for each row.",
+          footerEdition: "/ 01", footerNote: "Review every response, then submit it yourself in Google Forms.",
+          guideTitle: "Upload manual", guideIntro: "File, Google Form link, and mapping requirements.", guideClose: "Close upload guide",
+          guideFileTitle: "File type and layout", guideFileBody: "Use an .xlsx, .xls, or .xlsm workbook. Put one column header in the first row; each data row becomes one review link. Empty rows are skipped.",
+          guideSheetTitle: "Choose a worksheet", guideSheetBody: "If the workbook has multiple sheets, choose the right one after upload. Remove merged headers or title rows above the headers first.",
+          guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "In Google Forms, choose Get pre-filled link, enter sample values, and paste the generated URL here. A regular forms.gle share link has no field IDs.",
+          guideMapTitle: "Map columns", guideMapBody: "Match each entry ID to the correct workbook column. Leave a field blank to omit it. Review the mappings before creating links.",
+          guidePrivacyTitle: "Data and submission", guidePrivacyBody: "The workbook is processed in your browser, not uploaded to a server. Links and CSV files may contain personal data; store them carefully. Open and verify each link, then submit it yourself.",
+          guideNetworkNote: "The Excel-reading library loads from the internet. The workbook stays local, but the page needs an internet connection when opened.",
+          initialStatus: "Start by choosing an Excel file and adding a prefilled link.", libraryUnavailable: "The Excel reader did not load. Check your connection and reload the page.",
+          workbookLoaded: "Read {count} non-empty rows.", workbookMeta: "{size} KB · {count} worksheet(s)", workbookError: "Could not read this workbook. Check its file format and worksheet.",
+          templateInvalid: "Use a Google Forms “Get pre-filled link” URL; a regular forms.gle link is not enough.",
+          templateNoFields: "No entry fields were found in this link. Create a new prefilled link in Google Forms.", templateMalformed: "Paste a valid prefilled link.",
+          fieldCount: "{count} FIELDS", blankField: "Leave this field blank", columnForEntry: "Excel column for {entry}",
+          needsSetup: "Add an Excel file, a prefilled link, and at least one mapping.", noUnmapped: "Field IDs found. Map them to Excel columns.",
+          resultCount: "{count} review links · review each row before submitting", generated: "Created {count} links. No form responses were submitted.",
+          rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Open prefilled Google Form for row {row}",
+          mobileCounter: "{current} / {total} ROWS", mobileOpen: "Open Google Form ↗", swipePrevious: "Show previous row", swipeNext: "Show next row",
+          swipeInstructions: "Swipe to the previous or next row, or use the arrow buttons.",
+          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS"
+        }
+      };
+      let language = "bn";
+      try {
+        language = localStorage.getItem("rowform-language") === "en" ? "en" : "bn";
+      } catch {}
+      let workbook = null;
+      let currentFile = null;
+      let headers = [];
+      let rows = [];
+      let entryIds = [];
+      let generated = [];
+      let currentReviewIndex = 0;
+      let swipeStart = null;
+      let currentStatus = { key: "initialStatus", type: "", values: {} };
+
+      function translate(key, values = {}) {
+        let message = messages[language][key] || messages.bn[key] || key;
+        for (const [name, value] of Object.entries(values)) message = message.replaceAll(`{${name}}`, String(value));
+        return message;
+      }
+
+      function applyLanguage() {
+        document.documentElement.lang = language;
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          element.textContent = translate(element.dataset.i18n);
+        });
+        document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+          element.setAttribute("aria-label", translate(element.dataset.i18nAria));
+        });
+        for (const button of languageButtons) button.setAttribute("aria-pressed", String(button.dataset.language === language));
+        if (!currentFile) {
+          fileName.textContent = translate("filePrompt");
+          fileMeta.textContent = translate("fileHint");
+        } else {
+          fileName.textContent = currentFile.name;
+          fileMeta.textContent = translate("workbookMeta", {
+            size: (currentFile.size / 1024).toFixed(1),
+            count: workbook.SheetNames.length
+          });
+        }
+        rowCount.textContent = translate("rowCount", { count: rows.length });
+        mappingCount.textContent = translate("fieldCount", { count: entryIds.length });
+        mappingList.querySelectorAll(".mapping-select").forEach((select) => {
+          if (select.options[0]) select.options[0].textContent = translate("blankField");
+          select.setAttribute("aria-label", translate("columnForEntry", { entry: select.dataset.entry }));
+        });
+        if (!tableWrap.hidden) renderResults();
+        else resultsSummary.textContent = translate("resultsEmpty");
+        setStatus(currentStatus.key, currentStatus.type, currentStatus.values);
+        if (guideDialog.open && guideDialog.contains(document.activeElement)) document.querySelector("#guide-close").focus();
+      }
+
+      function setStatus(key, type = "", values = {}) {
+        currentStatus = { key, type, values };
+        status.textContent = translate(key, values);
+        status.className = `status ${type}`.trim();
+      }
+
+      function uniqueHeaders(values) {
+        const used = new Map();
+        return values.map((value, index) => {
+          const base = String(value ?? "").trim() || `Column ${index + 1}`;
+          const count = (used.get(base) || 0) + 1;
+          used.set(base, count);
+          return count === 1 ? base : `${base} (${count})`;
+        });
+      }
+
+      function readSheet(name) {
+        const sheet = workbook?.Sheets[name];
+        if (!sheet) return;
+        const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", raw: false });
+        headers = uniqueHeaders(matrix[0] || []);
+        rows = matrix.slice(1)
+          .filter((row) => row.some((value) => String(value ?? "").trim() !== ""))
+          .map((row) => headers.map((_, index) => String(row[index] ?? "")));
+        rowCount.textContent = translate("rowCount", { count: rows.length });
+        renderMapping();
+        invalidateResults();
+        updateReadyState();
+      }
+
+      async function loadFile(file) {
+        if (!file) return;
+        if (!window.XLSX) {
+          setStatus("libraryUnavailable", "error");
+          return;
+        }
+        try {
+          const data = await file.arrayBuffer();
+          workbook = XLSX.read(data, { type: "array", cellDates: false });
+          if (!workbook.SheetNames.length) throw new Error("Workbook-এ worksheet নেই।");
+          currentFile = file;
+          fileName.textContent = file.name;
+          fileMeta.textContent = translate("workbookMeta", {
+            size: (file.size / 1024).toFixed(1),
+            count: workbook.SheetNames.length
+          });
+          sheetSelect.replaceChildren(...workbook.SheetNames.map((name) => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            return option;
+          }));
+          sheetRow.hidden = false;
+          readSheet(sheetSelect.value);
+          setStatus("workbookLoaded", "success", { count: rows.length });
+        } catch {
+          workbook = null;
+          currentFile = null;
+          rows = [];
+          headers = [];
+          sheetRow.hidden = true;
+          renderMapping();
+          updateReadyState();
+          setStatus("workbookError", "error");
+        }
+      }
+
+      function parseTemplate() {
+        const raw = templateInput.value.trim();
+        if (!raw) return { url: null, ids: [], errorKey: "" };
+        try {
+          const url = new URL(raw);
+          if (url.protocol !== "https:" || !/(^|\.)google\.com$/i.test(url.hostname) || !url.pathname.includes("/forms/") || !url.pathname.endsWith("/viewform")) {
+            return { url: null, ids: [], errorKey: "templateInvalid" };
+          }
+          const ids = [...new Set([...url.searchParams.keys()].filter((key) => /^entry\.\d+$/.test(key)))];
+          if (!ids.length) return { url, ids: [], errorKey: "templateNoFields" };
+          return { url, ids, errorKey: "" };
+        } catch {
+          return { url: null, ids: [], errorKey: "templateMalformed" };
+        }
+      }
+
+      function renderMapping() {
+        const parsed = parseTemplate();
+        entryIds = parsed.ids;
+        mappingCount.textContent = translate("fieldCount", { count: entryIds.length });
+        mappingList.replaceChildren();
+        if (parsed.errorKey) {
+          const hint = document.createElement("p");
+          hint.className = "field-hint";
+          hint.textContent = translate(parsed.errorKey);
+          mappingList.append(hint);
+          updateReadyState();
+          return;
+        }
+        if (!entryIds.length || !headers.length) {
+          const hint = document.createElement("p");
+          hint.className = "field-hint";
+          hint.textContent = translate("mappingHint");
+          mappingList.append(hint);
+          updateReadyState();
+          return;
+        }
+        for (const entryId of entryIds) {
+          const row = document.createElement("div");
+          row.className = "mapping-row";
+          const key = document.createElement("code");
+          key.className = "entry-key";
+          key.textContent = entryId;
+          const select = document.createElement("select");
+          select.className = "select mapping-select";
+          select.dataset.entry = entryId;
+          select.setAttribute("aria-label", translate("columnForEntry", { entry: entryId }));
+          const blank = document.createElement("option");
+          blank.value = "";
+          blank.textContent = translate("blankField");
+          select.append(blank);
+          for (const header of headers) {
+            const option = document.createElement("option");
+            option.value = header;
+            option.textContent = header;
+            select.append(option);
+          }
+          row.append(key, select);
+          mappingList.append(row);
+          select.addEventListener("change", () => {
+            invalidateResults();
+            updateReadyState();
+          });
+        }
+        updateReadyState();
+      }
+
+      function mappings() {
+        return [...mappingList.querySelectorAll(".mapping-select")]
+          .map((select) => ({ entry: select.dataset.entry, column: select.value }))
+          .filter((mapping) => mapping.column);
+      }
+
+      function updateReadyState() {
+        const parsed = parseTemplate();
+        const ready = rows.length > 0 && !parsed.errorKey && entryIds.length > 0 && mappings().length > 0;
+        generateButton.disabled = !ready;
+      }
+
+      function renderMobileReview() {
+        if (!generated.length) {
+          mobileReview.hidden = true;
+          return;
+        }
+        currentReviewIndex = Math.min(currentReviewIndex, generated.length - 1);
+        const item = generated[currentReviewIndex];
+        mobileCounter.textContent = translate("mobileCounter", {
+          current: String(item.number).padStart(2, "0"),
+          total: generated.length
+        });
+        mobileFields.replaceChildren();
+        const shownColumns = [...new Set(mappings().map((mapping) => mapping.column))];
+        for (const column of shownColumns) {
+          const field = document.createElement("div");
+          field.className = "review-field";
+          const label = document.createElement("span");
+          label.textContent = column;
+          const value = document.createElement("strong");
+          value.textContent = item.row[headers.indexOf(column)] || "—";
+          field.append(label, value);
+          mobileFields.append(field);
+        }
+        mobileOpen.href = item.url;
+        mobileOpen.setAttribute("aria-label", translate("openForm", { row: item.number }));
+        mobilePrev.disabled = currentReviewIndex === 0;
+        mobileNext.disabled = currentReviewIndex === generated.length - 1;
+        mobileReview.hidden = false;
+      }
+
+      function navigateMobileReview(direction) {
+        const nextIndex = currentReviewIndex + direction;
+        if (nextIndex < 0 || nextIndex >= generated.length) return;
+        currentReviewIndex = nextIndex;
+        mobileReviewCard.dataset.direction = direction > 0 ? "next" : "previous";
+        mobileReviewCard.classList.remove("is-entering");
+        void mobileReviewCard.offsetWidth;
+        renderMobileReview();
+        mobileReviewCard.classList.add("is-entering");
+      }
+
+      function invalidateResults() {
+        generated = [];
+        currentReviewIndex = 0;
+        tableWrap.hidden = true;
+        mobileReview.hidden = true;
+        emptyState.hidden = false;
+        resultActions.hidden = true;
+        resultBody.replaceChildren();
+        resultsSummary.textContent = translate("resultsEmpty");
+      }
+
+      function buildLink(template, row, selectedMappings) {
+        const url = new URL(template.href);
+        for (const key of [...url.searchParams.keys()]) {
+          if (/^entry\.\d+$/.test(key)) url.searchParams.delete(key);
+        }
+        for (const mapping of selectedMappings) {
+          const value = row[headers.indexOf(mapping.column)] ?? "";
+          if (value.trim() !== "") url.searchParams.append(mapping.entry, value);
+        }
+        return url.href;
+      }
+
+      function renderResults() {
+        const previousIndex = currentReviewIndex;
+        const selectedMappings = mappings();
+        const shownColumns = [...new Set(selectedMappings.map((mapping) => mapping.column))];
+        const headerRow = document.createElement("tr");
+        for (const label of [translate("rowHeader"), ...shownColumns, translate("formHeader")]) {
+          const cell = document.createElement("th");
+          cell.textContent = label;
+          headerRow.append(cell);
+        }
+        resultHead.replaceChildren(headerRow);
+        resultBody.replaceChildren();
+        generated = rows.map((row, index) => ({ row, number: index + 1, url: buildLink(parseTemplate().url, row, selectedMappings) }));
+        currentReviewIndex = Math.min(previousIndex, generated.length - 1);
+        for (const item of generated) {
+          const tr = document.createElement("tr");
+          const number = document.createElement("td");
+          number.className = "row-number";
+          number.textContent = String(item.number).padStart(2, "0");
+          tr.append(number);
+          for (const column of shownColumns) {
+            const cell = document.createElement("td");
+            cell.textContent = item.row[headers.indexOf(column)] || "—";
+            cell.title = item.row[headers.indexOf(column)] || "";
+            tr.append(cell);
+          }
+          const actionCell = document.createElement("td");
+          const link = document.createElement("a");
+          link.className = "open-link";
+          link.href = item.url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = translate("reviewLink");
+          link.setAttribute("aria-label", translate("openForm", { row: item.number }));
+          actionCell.append(link);
+          tr.append(actionCell);
+          resultBody.append(tr);
+        }
+        emptyState.hidden = true;
+        tableWrap.hidden = false;
+        resultActions.hidden = false;
+        resultsSummary.textContent = translate("resultCount", { count: generated.length });
+        renderMobileReview();
+      }
+
+      function downloadCsv() {
+        const lines = [[translate("csvRow"), translate("csvUrl")], ...generated.map((item) => [item.number, item.url])];
+        const csv = lines.map((line) => line.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(",")).join("\r\n");
+        const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "rowform-review-links.csv";
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+
+      fileInput.addEventListener("change", (event) => loadFile(event.target.files[0]));
+      sheetSelect.addEventListener("change", () => readSheet(sheetSelect.value));
+      mobilePrev.addEventListener("click", () => navigateMobileReview(-1));
+      mobileNext.addEventListener("click", () => navigateMobileReview(1));
+      mobileReviewCard.addEventListener("touchstart", (event) => {
+        if (event.touches.length !== 1 || event.target.closest("a, button")) {
+          swipeStart = null;
+          return;
+        }
+        swipeStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      }, { passive: true });
+      mobileReviewCard.addEventListener("touchend", (event) => {
+        if (!swipeStart) return;
+        const deltaX = event.changedTouches[0].clientX - swipeStart.x;
+        const deltaY = event.changedTouches[0].clientY - swipeStart.y;
+        swipeStart = null;
+        if (Math.abs(deltaX) >= 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+          navigateMobileReview(deltaX < 0 ? 1 : -1);
+        }
+      }, { passive: true });
+      mobileReviewCard.addEventListener("touchcancel", () => { swipeStart = null; }, { passive: true });
+      for (const button of languageButtons) {
+        button.addEventListener("click", () => {
+          language = button.dataset.language;
+          try { localStorage.setItem("rowform-language", language); } catch {}
+          applyLanguage();
+        });
+      }
+      document.querySelector("#guide-open").addEventListener("click", () => guideDialog.showModal());
+      document.querySelector("#guide-close").addEventListener("click", () => guideDialog.close());
+      guideDialog.addEventListener("click", (event) => {
+        if (event.target === guideDialog) guideDialog.close();
+      });
+      templateInput.addEventListener("input", () => {
+        renderMapping();
+        invalidateResults();
+        const parsed = parseTemplate();
+        if (parsed.errorKey) setStatus(parsed.errorKey, "error");
+        else setStatus("noUnmapped");
+      });
+      generateButton.addEventListener("click", () => {
+        const parsed = parseTemplate();
+        if (parsed.errorKey || !rows.length || !mappings().length) {
+          setStatus(parsed.errorKey || "needsSetup", "error");
+          return;
+        }
+        renderResults();
+        setStatus("generated", "success", { count: generated.length });
+      });
+      downloadButton.addEventListener("click", downloadCsv);
+      dropZone.addEventListener("dragover", (event) => { event.preventDefault(); dropZone.classList.add("dragging"); });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragging"));
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("dragging");
+        loadFile(event.dataTransfer.files[0]);
+      });
+      applyLanguage();
+    })();
+  </script>
+</body>
+</html>
