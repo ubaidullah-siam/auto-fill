@@ -972,35 +972,31 @@
       });
 
       function requestFormMetadata(formUrl, endpoint) {
-        const requestId = `r${Date.now()}${Math.random().toString(36).slice(2, 10)}`;
         return new Promise((resolve, reject) => {
-          window.rowformResolverRequests = window.rowformResolverRequests || {};
-          window.rowformResolverCallback = window.rowformResolverCallback || ((id, result) => {
-            const pending = window.rowformResolverRequests[id];
-            if (!pending) return;
-            window.clearTimeout(pending.timeout);
-            pending.script.remove();
-            delete window.rowformResolverRequests[id];
-            resolve(result);
-          });
-
+          const callbackName = `__rowformLookup_${Date.now()}_${Math.random().toString(36).slice(2)}`;
           const script = document.createElement("script");
           const requestUrl = new URL(endpoint);
-          requestUrl.searchParams.set("requestId", requestId);
+          requestUrl.searchParams.set("callback", callbackName);
           requestUrl.searchParams.set("url", normalizedFormUrl(formUrl));
-          const timeout = window.setTimeout(() => {
-            script.remove();
-            delete window.rowformResolverRequests[requestId];
-            reject(new Error("RESOLVER_TIMEOUT"));
-          }, 20000);
-          window.rowformResolverRequests[requestId] = { script, timeout };
-          script.async = true;
-          script.onerror = () => {
+
+          function finish(error, result) {
             window.clearTimeout(timeout);
-            delete window.rowformResolverRequests[requestId];
+            delete window[callbackName];
             script.remove();
-            reject(new Error("RESOLVER_UNAVAILABLE"));
+            if (error) reject(error);
+            else resolve(result);
+          }
+
+          const timeout = window.setTimeout(() => finish(new Error("RESOLVER_TIMEOUT")), 20000);
+          window[callbackName] = (result) => {
+            if (!result || !result.ok || !Array.isArray(result.fields) || !result.fields.length) {
+              finish(new Error(result && result.error || "RESOLVER_FAILED"));
+              return;
+            }
+            finish(null, result);
           };
+          script.async = true;
+          script.onerror = () => finish(new Error("RESOLVER_UNAVAILABLE"));
           script.src = requestUrl.href;
           document.head.append(script);
         });
@@ -1025,12 +1021,12 @@
           renderMapping();
           invalidateResults();
           setStatus("backendLookupDone", "success", { count: metadata.fields.length });
-        } catch {
+        } catch (error) {
           if (sequence !== lookupSequence) return;
           resolvedForm = null;
           renderMapping();
           invalidateResults();
-          setStatus("backendLookupFailed", "error");
+          setStatus(error.message === "FORM_REQUIRES_ACCESS" || error.message === "FORM_NOT_PUBLIC" ? "resolverPrivate" : "backendLookupFailed", "error");
         }
       }
 

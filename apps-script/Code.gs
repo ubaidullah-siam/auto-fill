@@ -4,16 +4,26 @@ const ROWFORM_MAX_REDIRECTS = 5;
 const ROWFORM_MAX_HTML_LENGTH = 2500000;
 
 function doGet(event) {
+  const callback = String(event.parameter.callback || "");
   const requestId = String(event.parameter.requestId || "");
-  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(requestId)) {
-    return jsonp(requestId, { ok: false, error: "INVALID_REQUEST" });
+  const legacyCallbackValid = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(callback);
+  const requestIdValid = /^[a-zA-Z0-9_-]{1,64}$/.test(requestId);
+  if (!legacyCallbackValid && !requestIdValid) {
+    return ContentService.createTextOutput("Invalid callback").setMimeType(ContentService.MimeType.TEXT);
   }
 
   try {
-    return jsonp(requestId, inspectForm(event.parameter.url || ""));
+    return respond(callback, requestId, inspectForm(event.parameter.url || ""));
   } catch (error) {
-    return jsonp(requestId, { ok: false, error: error.message || "INSPECTION_FAILED" });
+    return respond(callback, requestId, { ok: false, error: error.message || "INSPECTION_FAILED" });
   }
+}
+
+function respond(callback, requestId, result) {
+  if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(callback)) {
+    return jsonpCallback(callback, result);
+  }
+  return jsonp(requestId, result);
 }
 
 function inspectForm(input) {
@@ -150,5 +160,10 @@ function getHeader(headers, name) {
 function jsonp(requestId, result) {
   const safeId = /^[a-zA-Z0-9_-]{1,64}$/.test(requestId) ? requestId : "invalid";
   const body = "window.rowformResolverCallback(" + JSON.stringify(safeId) + "," + JSON.stringify(result) + ");";
+  return ContentService.createTextOutput(body).setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
+
+function jsonpCallback(callback, result) {
+  const body = callback + "(" + JSON.stringify(result) + ");";
   return ContentService.createTextOutput(body).setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
