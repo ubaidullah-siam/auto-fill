@@ -548,7 +548,7 @@
           backendSetupTitle: "Automatic lookup সেটআপ (একবার)",
           backendUrlLabel: "Google Apps Script Web App URL", backendUrlHint: "apps-script/Code.gs Web App হিসেবে deploy করে /exec URL দিন। URL শুধু এই browser-এ save হবে; Excel backend-এ যাবে না।",
           backendSave: "URL save করুন", backendSaved: "Backend URL এই browser-এ save হয়েছে।", backendCleared: "Saved backend URL মুছে ফেলা হয়েছে।", backendInvalid: "Google Apps Script-এর valid /exec URL দিন।",
-          backendLookupPending: "Google Form-এর question খোঁজা হচ্ছে…", backendLookupFailed: "ফর্মের প্রশ্ন পড়া যায়নি। ফর্মটি পাবলিক কি না দেখুন, কিছুক্ষণ পর আবার চেষ্টা করুন, অথবা Get pre-filled link দিন।",
+          backendLookupPending: "Google Form-এর question খোঁজা হচ্ছে…", backendLookupFailed: "ফ্রি প্রক্সি থেকে ফর্ম পড়া যায়নি। নিচের বক্সটি খুলে দিয়েছি, সেখানে ফর্মের তথ্য পেস্ট করুন। এটা নিশ্চিতভাবে কাজ করে।",
           backendLookupDone: "{count}টি question পাওয়া গেছে। Excel column map করুন।",
           mappingLabel: "Field mapping", mappingHint: "Excel file ও Form link দিলে mapping এখানে দেখা যাবে।",
           generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। অটো সাবমিটে শুধু আপনার দেওয়া Google Form-এ তথ্য যায়।",
@@ -586,7 +586,7 @@
           autoConfirmDialog: "{count}টি row এক এক করে সাবমিট হবে। শুরু করবেন?", autoRunning: "সাবমিট চলছে… ট্যাব বন্ধ করবেন না।",
           autoDone: "শেষ। এই রানে {sent}টি পাঠানো হয়েছে, {left}টি বাকি আছে।", autoStopped: "থামানো হয়েছে। {left}টি বাকি আছে।",
           autoTripped: "টানা ৩ বার ব্যর্থ হওয়ায় থামানো হয়েছে। ইন্টারনেট ও ফর্ম দেখে আবার চেষ্টা করুন।", autoNothing: "পাঠানোর মতো row নেই।", historyCleared: "ইতিহাস মুছে ফেলা হয়েছে।",
-          creditBy: "তৈরি করেছেন", srcTitle: "লিংক না খুললে: ফর্মের পেজ সোর্স পেস্ট করুন", srcHelp: "ফর্মটি ব্রাউজারে খুলে Ctrl+U চাপুন, Ctrl+A দিয়ে সব কপি করে এখানে পেস্ট করুন। তারপর নিচের বোতাম চাপুন। এটা প্রক্সি ছাড়াই কাজ করে।", srcUse: "এই সোর্স থেকে প্রশ্ন পড়ুন", srcBad: "এই লেখায় ফর্মের প্রশ্ন পাওয়া যায়নি। পুরো পেজ সোর্স কপি করেছেন কি না দেখুন, এবং উপরের ঘরে ফর্মের লিংক দিন।", statusHeader: "অবস্থা", st_pending: "অপেক্ষায়", st_opened: "খোলা হয়েছে", st_sending: "পাঠানো হচ্ছে", st_sent: "পাঠানো হয়েছে", st_failed: "ব্যর্থ", st_skipped: "বাদ",
+          creditBy: "তৈরি করেছেন", srcTitle: "লিংক না খুললে: ফর্মের পেজ সোর্স পেস্ট করুন", srcHelp: "১) ফর্মটি পিসির Chrome-এ খুলুন। ২) F12 চেপে Console ট্যাবে নিচের লাইন পেস্ট করে Enter দিন (পেস্ট না হলে আগে allow pasting লিখে Enter দিন): copy(location.href.split('?')[0]+'\\n'+JSON.stringify(FB_PUBLIC_LOAD_DATA_)) ৩) এখানে Ctrl+V করে নিচের বোতাম চাপুন। বিকল্প: Ctrl+U দিয়ে পুরো পেজ সোর্স কপি করে পেস্ট করুন।", srcUse: "এই সোর্স থেকে প্রশ্ন পড়ুন", srcBad: "এই লেখায় ফর্মের প্রশ্ন পাওয়া যায়নি। পুরো পেজ সোর্স কপি করেছেন কি না দেখুন, এবং উপরের ঘরে ফর্মের লিংক দিন।", statusHeader: "অবস্থা", st_pending: "অপেক্ষায়", st_opened: "খোলা হয়েছে", st_sending: "পাঠানো হচ্ছে", st_sent: "পাঠানো হয়েছে", st_failed: "ব্যর্থ", st_skipped: "বাদ",
           note_dup: "ডুপ্লিকেট", note_empty: "ফাঁকা", note_sent: "আগেই পাঠানো", progressText: "পাঠানো {sent}/{total} · ব্যর্থ {failed} · বাদ {skipped}"
         },
         en: {
@@ -603,7 +603,7 @@
           backendSetupTitle: "Automatic field lookup setup (one time)",
           backendUrlLabel: "Google Apps Script Web App URL", backendUrlHint: "Deploy apps-script/Code.gs as a Web App and paste its /exec URL. It is saved only in this browser; the workbook is never sent to the backend.",
           backendSave: "Save URL", backendSaved: "Backend URL saved in this browser.", backendCleared: "Saved backend URL removed.", backendInvalid: "Enter a valid Google Apps Script /exec URL.",
-          backendLookupPending: "Looking up Google Form questions…", backendLookupFailed: "Could not read the form questions. Check that the form is public, try again in a moment, or paste a Get pre-filled link.",
+          backendLookupPending: "Looking up Google Form questions…", backendLookupFailed: "The free proxy could not read the form. I opened the box below: paste the form data there. This always works.",
           backendLookupDone: "Found {count} questions. Map them to Excel columns.",
           mappingLabel: "Field mapping", mappingHint: "Upload a workbook and add a Google Forms link to map columns here.",
           generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and never uploaded. Auto submit sends data only to the Google Form you chose.",
@@ -641,7 +641,7 @@
           autoConfirmDialog: "{count} rows will be submitted one by one. Start?", autoRunning: "Submitting… keep this tab open.",
           autoDone: "Done. {sent} sent this run, {left} left.", autoStopped: "Stopped. {left} left.",
           autoTripped: "Stopped after 3 failures in a row. Check your connection and the form, then try again.", autoNothing: "No rows to send.", historyCleared: "History cleared.",
-          creditBy: "Created by", srcTitle: "If the link fails: paste the form page source", srcHelp: "Open the form in your browser, press Ctrl+U, Ctrl+A to copy everything, paste it here, then press the button. This works without any proxy.", srcUse: "Read questions from this source", srcBad: "No form questions found in this text. Make sure you copied the whole page source and put the form link in the box above.", statusHeader: "Status", st_pending: "Waiting", st_opened: "Opened", st_sending: "Sending", st_sent: "Sent", st_failed: "Failed", st_skipped: "Skipped",
+          creditBy: "Created by", srcTitle: "If the link fails: paste the form page source", srcHelp: "1) Open the form in Chrome on a PC. 2) Press F12, open Console, paste this line and press Enter (if paste is blocked, type allow pasting first): copy(location.href.split('?')[0]+'\\n'+JSON.stringify(FB_PUBLIC_LOAD_DATA_)) 3) Press Ctrl+V here, then the button below. Alternative: Ctrl+U, copy the whole page source and paste it.", srcUse: "Read questions from this source", srcBad: "No form questions found in this text. Make sure you copied the whole page source and put the form link in the box above.", statusHeader: "Status", st_pending: "Waiting", st_opened: "Opened", st_sending: "Sending", st_sent: "Sent", st_failed: "Failed", st_skipped: "Skipped",
           note_dup: "duplicate", note_empty: "empty", note_sent: "sent before", progressText: "Sent {sent}/{total} · failed {failed} · skipped {skipped}"
         }
       };
@@ -1244,10 +1244,13 @@
         return parseFormHtml(html, sourceUrl);
       }
       function parseFormHtml(html, sourceUrl) {
-        const m = html.match(/FB_PUBLIC_LOAD_DATA_\s*=\s*([\s\S]*?);\s*<\/script>/);
-        if (!m) throw new Error("PROXY_FAILED");
+        let text = html.trim(), hint = "";
+        if (/^https?:\/\//.test(text)) { const nl = text.indexOf("\n"); hint = nl > 0 ? text.slice(0, nl).trim().split("?")[0] : ""; text = nl > 0 ? text.slice(nl + 1).trim() : ""; }
+        const m = text.match(/FB_PUBLIC_LOAD_DATA_\s*=\s*([\s\S]*?);\s*<\/script>/);
+        const jsonText = m ? m[1] : (text.startsWith("[") ? text : "");
+        if (!jsonText) throw new Error("PROXY_FAILED");
         let data;
-        try { data = JSON.parse(m[1]); } catch { throw new Error("PROXY_FAILED"); }
+        try { data = JSON.parse(jsonText); } catch { throw new Error("PROXY_FAILED"); }
         const fields = []; let pages = 1;
         for (const q of (data[1] && data[1][1]) || []) {
           const type = q[3];
@@ -1260,9 +1263,9 @@
         }
         if (!fields.length) throw new Error("PROXY_FAILED");
         const decode = (t) => t.replace(/&amp;/g, "&");
-        let formUrl = "";
+        let formUrl = /\/viewform$/.test(hint) ? hint : "";
         const act = html.match(/action="(https:\/\/docs\.google\.com\/forms\/[^"]+?)\/formResponse"/);
-        if (act) formUrl = decode(act[1]) + "/viewform";
+        if (act && !formUrl) formUrl = decode(act[1]) + "/viewform";
         if (!formUrl) { const og = html.match(/property="og:url"\s+content="([^"]+)"/); if (og) formUrl = decode(og[1]).split("?")[0]; }
         if (!formUrl) { try { if (new URL(sourceUrl).hostname === "docs.google.com") formUrl = normalizedFormUrl(sourceUrl); } catch {} }
         if (!/\/viewform$/.test(formUrl)) throw new Error("PROXY_FAILED");
@@ -1311,6 +1314,11 @@
         return [[entry, raw]];
       }
 
+      function openSourceBox() {
+        const box = document.querySelector(".srcbox");
+        box.open = true;
+        box.scrollIntoView?.({ behavior: "smooth", block: "center" });
+      }
       document.querySelector("#src-use").addEventListener("click", () => {
         const link = templateInput.value.trim();
         const parsed = link ? parseFormUrl(link) : { errorKey: "needsFieldTemplate" };
@@ -1380,6 +1388,7 @@
           renderMapping();
           invalidateResults();
           setStatus(error.message === "FORM_REQUIRES_ACCESS" || error.message === "FORM_NOT_PUBLIC" ? "resolverPrivate" : "backendLookupFailed", "error");
+          if (/PROXY|RESOLVER/.test(error.message)) openSourceBox();
         }
       }
 
@@ -1473,4 +1482,4 @@
     })();
   </script>
 </body>
-        </html>
+  </html>
