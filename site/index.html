@@ -227,6 +227,73 @@
       .art-sheet { transform: none !important; }
       .mobile-review-card.is-entering { animation: none; }
     }
+
+    /* v2: bold type, rounded shapes, submit modes */
+    body { font-weight: 600; }
+    .panel { border-radius: 28px; overflow: hidden; }
+    .button { border-radius: 999px; font-weight: 800; }
+    .control, .select { border-radius: 16px; font-weight: 700; }
+    .mapping-row { border-radius: 18px; }
+    .panel-title { font-size: 16px; font-weight: 800; }
+    .entry-key, .field-label { font-weight: 800; }
+    .status { font-size: 13px; font-weight: 700; }
+    .mode { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 18px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: #eef3ea; }
+    .mode button { min-height: 46px; border: 0; border-radius: 999px; background: transparent; color: var(--forest); font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+    .mode button[aria-pressed="true"] { background: var(--forest); color: #fff; }
+    .autobox { display: grid; gap: 12px; margin-top: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 22px; background: #f8faf6; }
+    .autobox[hidden], .runbar[hidden] { display: none; }
+    .autobox label { font-size: 12px; font-weight: 800; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .check { display: flex; align-items: flex-start; gap: 10px; line-height: 1.55; }
+    .check input { flex: none; width: 22px; height: 22px; accent-color: var(--forest); }
+    .runbar { display: grid; gap: 10px; padding: 16px 19px; border-bottom: 1px solid var(--line); }
+    .bar { height: 14px; overflow: hidden; border-radius: 999px; background: #dfe8dc; }
+    .bar i { display: block; width: 0; height: 100%; border-radius: 999px; background: var(--forest); transition: width .3s; }
+    .progress { margin: 0; font-size: 13px; font-weight: 800; }
+    .run-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { display: inline-block; padding: 3px 11px; border-radius: 999px; background: #e6ede3; color: var(--forest); font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .pill.sent { background: #d3eed9; } .pill.sending { background: #d9e8f6; color: #1d4f80; }
+    .pill.failed { background: #f6d9d2; color: #a53e2a; } .pill.skipped { background: #f1ebc9; color: #7a6512; }
+    tr.done td { opacity: .55; }
+    .credit { display: flex; align-items: center; gap: 14px; margin: 4px 0 28px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); width: fit-content; max-width: 100%; }
+    .credit-photo { display: grid; place-items: center; flex: none; width: 64px; height: 64px; overflow: hidden; border-radius: 50%; background: var(--forest); color: #fff; }
+    .credit-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .credit-photo b { font-size: 26px; font-weight: 800; }
+    .credit-text { display: grid; gap: 1px; min-width: 0; }
+    .credit-text small { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .credit-text strong { font-size: 18px; font-weight: 800; color: var(--ink); }
+    .credit-text a { color: var(--forest); font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+    .srcbox { margin-top: 10px; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 18px; }
+    .srcbox summary { cursor: pointer; font-size: 12px; font-weight: 800; color: var(--forest); }
+    .srcbox textarea { width: 100%; margin: 8px 0; font-family: var(--mono); font-size: 11px; }
+    /* v3: richer UI */
+    :root { --shadow: 0 22px 54px -28px rgba(23, 72, 61, .45); }
+    body { background-image: radial-gradient(880px 420px at 10% -8%, rgba(214, 239, 180, .8), transparent 60%), radial-gradient(720px 360px at 100% 0, rgba(242, 201, 93, .3), transparent 55%), linear-gradient(rgba(23, 72, 61, .03) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 72, 61, .03) 1px, transparent 1px); background-size: auto, auto, 28px 28px, 28px 28px; background-attachment: fixed; }
+    .topbar { position: sticky; top: 0; z-index: 20; background: rgba(240, 244, 237, .82); backdrop-filter: blur(14px); }
+    .panel { background: rgba(251, 252, 248, .92); border-color: rgba(23, 72, 61, .12); box-shadow: var(--shadow); animation: rise .55s ease both; }
+    .layout > .panel:nth-child(2) { animation-delay: .1s; }
+    .panel-head { background: linear-gradient(90deg, rgba(214, 239, 180, .6), transparent 70%); }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .button { box-shadow: 0 10px 22px -12px rgba(23, 72, 61, .75); transition: transform .15s, filter .15s, box-shadow .15s; }
+    .button.secondary, .button:disabled { box-shadow: none; }
+    .button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.07); }
+    .button:active:not(:disabled) { transform: none; }
+    .control:focus, .select:focus { outline: 3px solid rgba(214, 239, 180, .95); border-color: var(--forest); }
+    .mapping-row { background: #fff; box-shadow: 0 8px 18px -16px rgba(23, 72, 61, .7); transition: transform .15s; }
+    .mapping-row:hover { transform: translateX(3px); }
+    .upload { border-radius: 24px; transition: background .2s, transform .2s; }
+    .upload:hover { background: #f1f7e8; transform: translateY(-2px); }
+    .bar i { background: repeating-linear-gradient(45deg, var(--forest) 0 10px, #2c6d5d 10px 20px); background-size: 28px 28px; animation: slide 1s linear infinite; }
+    @keyframes slide { to { background-position: 28px 0; } }
+    table { border-collapse: separate; border-spacing: 0; }
+    tbody tr:nth-child(even) td { background: rgba(214, 239, 180, .16); }
+    tbody tr:hover td { background: rgba(214, 239, 180, .4); }
+    .mode button { transition: background .2s, color .2s, transform .15s; }
+    .mode button:hover { transform: scale(1.02); }
+    .credit { box-shadow: var(--shadow); }
+    .credit-photo { box-shadow: 0 0 0 4px var(--mint); }
+    @media (max-width: 640px) { .panel { border-radius: 22px; } .row2 { grid-template-columns: 1fr; } .credit { width: 100%; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
 </head>
 <body>
@@ -297,13 +364,15 @@
 
             <label class="field-label" for="template-url" data-i18n="formLinkLabel">Google Forms link</label>
             <p class="field-hint" data-i18n="formLinkHint">forms.gle, সাধারণ Form link, বা prefilled link দিন।</p>
-            <input class="control" id="template-url" type="url" inputmode="url" placeholder="https://forms.gle/... or docs.google.com/forms/..." autocomplete="url">
+            <details class="srcbox">
+              <summary data-i18n="srcTitle">লিংক না খুললে: ফর্মের পেজ সোর্স পেস্ট করুন</summary>
+              <p class="field-hint" data-i18n="srcHelp"></p>
+              <textarea class="control" id="src-paste" rows="4" spellcheck="false"></textarea>
+              <button class="button secondary" id="src-use" type="button" data-i18n="srcUse">এই সোর্স থেকে প্রশ্ন পড়ুন</button>
+            </details>
+            <input class="control" id="template-url" type="url" inputmode="url" placeholder="https://forms.gle/…  /  docs.google.com/forms/…  /  prefilled link" autocomplete="url">
 
-            <div class="field-row">
-              <label class="field-label" for="field-template-url" data-i18n="fieldTemplateLabel">Field ID template (optional)</label>
-              <p class="field-hint" data-i18n="fieldTemplateHint">উপরের link-এ entry ID না থাকলে একই Form-এর Get pre-filled link এখানে দিন।</p>
-              <input class="control" id="field-template-url" type="url" inputmode="url" placeholder="https://docs.google.com/forms/.../viewform?entry.123=..." autocomplete="url">
-            </div>
+            <input id="field-template-url" type="hidden">
 
             <details class="backend-settings" id="backend-settings">
               <summary data-i18n="backendSetupTitle">Automatic field lookup setup (one time)</summary>
@@ -328,6 +397,18 @@
               <p class="field-hint" data-i18n="mappingHint">Excel file ও prefilled link দিলে mapping এখানে দেখা যাবে।</p>
             </div>
 
+            <div class="mode" role="group">
+              <button type="button" id="mode-manual" aria-pressed="true" data-i18n="modeManual">Manual submit</button>
+              <button type="button" id="mode-auto" aria-pressed="false" data-i18n="modeAuto">Auto submit</button>
+            </div>
+            <div class="autobox" id="autobox" hidden>
+              <div class="row2">
+                <div><label for="auto-delay" data-i18n="autoDelayLabel">Delay (s)</label><input class="control" id="auto-delay" type="number" min="3" max="300" value="10"></div>
+                <div><label for="auto-cap" data-i18n="autoCapLabel">Max rows</label><input class="control" id="auto-cap" type="number" min="1" max="500" value="20"></div>
+              </div>
+              <label class="check"><input type="checkbox" id="auto-confirm"><span data-i18n="autoConfirm"></span></label>
+              <p class="field-hint" data-i18n="autoNote"></p>
+            </div>
             <button class="button generate" id="generate-button" type="button" disabled><span data-i18n="generateButton">Review link তৈরি করুন</span><span aria-hidden="true">↗</span></button>
             <p class="status" id="status" role="status" aria-live="polite" data-i18n="initialStatus">শুরু করতে Excel file ও prefilled link দিন।</p>
             <p class="privacy"><span class="privacy-mark" aria-hidden="true">[i]</span><span data-i18n="privacyNote">Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না।</span></p>
@@ -342,6 +423,15 @@
             </div>
             <div class="result-actions" id="result-actions" hidden>
               <button class="button secondary" id="download-button" type="button" data-i18n="downloadButton">লিংক CSV</button>
+            </div>
+          </div>
+          <div class="runbar" id="run-bar" hidden>
+            <div class="bar"><i id="bar-fill"></i></div>
+            <p class="progress" id="progress-text"></p>
+            <div class="run-actions">
+              <button class="button" id="auto-start" type="button" disabled data-i18n="autoStart">Start</button>
+              <button class="button secondary" id="auto-stop" type="button" disabled data-i18n="autoStop">Stop</button>
+              <button class="button secondary" id="auto-reset" type="button" data-i18n="autoReset">Clear history</button>
             </div>
           </div>
           <div class="empty" id="empty-state">
@@ -398,6 +488,10 @@
       <span><strong>rowform</strong> <span class="mono" data-i18n="footerEdition">/ 01</span></span>
       <span data-i18n="footerNote">প্রতিটি response review করুন, তারপর Google Forms-এ submit করুন।</span>
     </footer>
+    <div class="credit">
+      <span class="credit-photo"><img id="credit-img" alt="" width="64" height="64"><b id="credit-initial" hidden></b></span>
+      <span class="credit-text"><small data-i18n="creditBy">তৈরি করেছেন</small><strong id="credit-name"></strong><a id="credit-link" target="_blank" rel="noopener noreferrer" hidden></a></span>
+    </div>
   </div>
 
   <script>
@@ -433,33 +527,38 @@
       const mobilePrev = document.querySelector("#mobile-prev");
       const mobileNext = document.querySelector("#mobile-next");
       const guideDialog = document.querySelector("#guide-dialog");
+      const modeButtons = { manual: document.querySelector("#mode-manual"), auto: document.querySelector("#mode-auto") };
+      const autobox = document.querySelector("#autobox"), runBar = document.querySelector("#run-bar");
+      const delayInput = document.querySelector("#auto-delay"), capInput = document.querySelector("#auto-cap"), autoConfirm = document.querySelector("#auto-confirm");
+      const autoStart = document.querySelector("#auto-start"), autoStop = document.querySelector("#auto-stop"), autoReset = document.querySelector("#auto-reset");
+      const barFill = document.querySelector("#bar-fill"), progressText = document.querySelector("#progress-text");
       const languageButtons = [...document.querySelectorAll("[data-language]")];
       const messages = {
         bn: {
           brandHome: "Rowform home", languageLabel: "ভাষা নির্বাচন", localNote: "ফাইল আপনার browser-এই থাকে",
           eyebrow: "SHEET → FORM WORKSPACE", headlineFirst: "শিট থেকে ফর্ম।", headlineSecond: "আপনার review-তে।",
-          introCopy: "Excel-এর row-গুলোকে Google Forms-এর prefilled link-এ সাজান। প্রতিটি response দেখে তারপর নিজে submit করুন।",
+          introCopy: "Excel-এর row-গুলো Google Forms-এ ম্যানুয়ালি বা ধীর গতির অটো সাবমিটে পাঠান। আগে সব row দেখে নিন।",
           stepsLabel: "কাজের ধাপ", stepUpload: "Excel file বাছুন", stepMap: "Form field map করুন", stepReview: "Review করে খুলুন",
           setupTitle: "তথ্য সাজান", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "আপলোড নির্দেশিকা",
           filePrompt: "এখানে .xlsx বা .xls ফাইল দিন", fileHint: "প্রথম row-টি column header হিসেবে ধরা হবে", chooseFile: "ফাইল বাছুন",
           worksheetLabel: "Worksheet", formLinkLabel: "Google Forms link",
-          formLinkHint: "forms.gle, সাধারণ Form link, বা prefilled link দিন।",
+          formLinkHint: "যেকোনো Google Form link একটাই ঘরে দিন। প্রশ্ন পড়তে ফর্মের পাবলিক পাতাটি একটি প্রক্সির মাধ্যমে আনা হয়; আপনার Excel ডেটা কখনো যায় না।",
           fieldTemplateLabel: "Field ID template (optional)",
           fieldTemplateHint: "উপরের link-এ entry ID না থাকলে একই Form-এর Get pre-filled link এখানে দিন।",
           backendSetupTitle: "Automatic lookup সেটআপ (একবার)",
           backendUrlLabel: "Google Apps Script Web App URL", backendUrlHint: "apps-script/Code.gs Web App হিসেবে deploy করে /exec URL দিন। URL শুধু এই browser-এ save হবে; Excel backend-এ যাবে না।",
           backendSave: "URL save করুন", backendSaved: "Backend URL এই browser-এ save হয়েছে।", backendCleared: "Saved backend URL মুছে ফেলা হয়েছে।", backendInvalid: "Google Apps Script-এর valid /exec URL দিন।",
-          backendLookupPending: "Google Form-এর question খোঁজা হচ্ছে…", backendLookupFailed: "Automatic lookup হয়নি। Form public কি না এবং backend deployment ঠিক আছে কি না দেখুন।",
+          backendLookupPending: "Google Form-এর question খোঁজা হচ্ছে…", backendLookupFailed: "ফর্মের প্রশ্ন পড়া যায়নি। ফর্মটি পাবলিক কি না দেখুন, কিছুক্ষণ পর আবার চেষ্টা করুন, অথবা Get pre-filled link দিন।",
           backendLookupDone: "{count}টি question পাওয়া গেছে। Excel column map করুন।",
           mappingLabel: "Field mapping", mappingHint: "Excel file ও Form link দিলে mapping এখানে দেখা যাবে।",
-          generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। এই tool নিজে form submit করে না.",
+          generateButton: "Review link তৈরি করুন", privacyNote: "Workbook এই browser-এ process হয়; server-এ upload হয় না। অটো সাবমিটে শুধু আপনার দেওয়া Google Form-এ তথ্য যায়।",
           resultsTitle: "Review queue", resultsEmpty: "আপনার তৈরি link-গুলো এখানে দেখা যাবে", downloadButton: "লিংক CSV",
           emptyTitle: "আপনার next row-এর অপেক্ষায়", emptyCopy: "Workbook আর Google Form link যোগ করলে প্রতিটি row-এর review link এখানে আসবে।",
-          footerEdition: "/ 01", footerNote: "প্রতিটি response review করুন, তারপর Google Forms-এ submit করুন।",
+          footerEdition: "/ 01", footerNote: "প্রতিটি row যাচাই করে তারপর সাবমিট করুন।",
           guideTitle: "আপলোড নির্দেশিকা", guideIntro: "ফাইল, Google Form link, এবং mapping-এর নিয়ম এখানে দেখুন।", guideClose: "নির্দেশনা বন্ধ করুন",
           guideFileTitle: "ফাইলের ধরন ও গঠন", guideFileBody: ".xlsx, .xls বা .xlsm workbook ব্যবহার করুন। প্রথম row-তে প্রতিটি column-এর header রাখুন; একেকটি data row হবে একটি review link। ফাঁকা row বাদ যাবে।",
           guideSheetTitle: "Worksheet বাছাই", guideSheetBody: "একাধিক sheet থাকলে upload-এর পর সঠিক worksheet বাছুন। Merged header বা header-এর ওপর title row থাকলে আগে workbook-এ ঠিক করে নিন।",
-          guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "Backend URL একবার save করলে public forms.gle বা সাধারণ Form link দিলেই question ID খুঁজবে। Backend সেট না থাকলে একই Form-এর Get pre-filled link Field ID template-এ দিন।",
+          guideLinkTitle: "সঠিক Google Forms link", guideLinkBody: "একটাই ঘরে যেকোনো Google Form link দিন। Apps Script URL একবার সেট থাকলে forms.gle বা সাধারণ link থেকেও question ID নিজে খুঁজে নেয়। না থাকলে Get pre-filled link দিন।",
           guideMapTitle: "Column mapping", guideMapBody: "প্রতিটি entry ID-কে workbook-এর সঠিক column-এর সঙ্গে মেলান। কোনো field পাঠাতে না চাইলে সেটি ফাঁকা রাখুন; সব link generate হওয়ার আগে mapping দেখে নিন।",
           guidePrivacyTitle: "তথ্য ও submission", guidePrivacyBody: "Workbook browser-এ process হয়, server-এ upload হয় না। Link/CSV-তে ব্যক্তিগত তথ্য থাকতে পারে, তাই সাবধানে রাখুন। প্রতিটি link খুলে যাচাই করে Google Form-এ নিজে submit করুন।",
           guideNetworkNote: "Excel পড়ার library internet থেকে load হয়। তাই workbook local থাকলেও page খোলার সময় internet দরকার।",
@@ -468,7 +567,7 @@
           templateInvalid: "Google Forms-এর forms.gle বা docs.google.com/forms link দিন।",
           fieldTemplateInvalid: "Field ID template হিসেবে একই Form-এর Get pre-filled link দিন।",
           fieldTemplateMismatch: "Form link ও Field ID template আলাদা Form-এর। একই Form-এর link ব্যবহার করুন।",
-          needsFieldTemplate: "Link পাওয়া গেছে, কিন্তু এতে question ID নেই। একই Form-এর Get pre-filled link Field ID template-এ দিন।",
+          needsFieldTemplate: "এই link থেকে question ID পাওয়া যায়নি। নিচে Apps Script URL একবার সেট করুন, অথবা Get pre-filled link থেকে নেওয়া link এই ঘরে দিন। সব ধরনের link-এ কাজের জন্য Python টুল (rowform.py) ব্যবহার করুন।",
           resolvingFields: "Google Form-এর question ID খোঁজা হচ্ছে…",
           resolverPrivate: "এই Form inspect করা যায়নি। এটি public কি না দেখুন, অথবা একই Form-এর prefilled link দিন।",
           resolverFailed: "Form inspect করা যায়নি। একই Form-এর prefilled link Field ID template-এ দিন।",
@@ -479,33 +578,42 @@
           rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Row {row} এর prefilled Google Form খুলুন",
           mobileCounter: "{current} / {total} ROWS", mobileOpen: "Google Form খুলুন ↗", swipePrevious: "আগের row দেখুন", swipeNext: "পরের row দেখুন",
           swipeInstructions: "আগের বা পরের row দেখতে swipe করুন, অথবা arrow button ব্যবহার করুন।",
-          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS"
+          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS",
+          modeManual: "ম্যানুয়াল সাবমিট", modeAuto: "অটো সাবমিট", autoDelayLabel: "প্রতিটির মাঝে বিরতি (সেকেন্ড)", autoCapLabel: "একবারে সর্বোচ্চ row",
+          autoConfirm: "এই ফর্মে সাবমিট করার অনুমতি আমার আছে এবং তালিকার তথ্য আমি যাচাই করেছি।",
+          autoNote: "একটার পর একটা ধীরে পাঠানো হয়, সব একসাথে নয়। আগে ২-৩টি row দিয়ে পরীক্ষা করুন। 'পাঠানো হয়েছে' মানে অনুরোধ গেছে; নিশ্চিত হতে Google Form-এর Responses দেখুন। লগইন, CAPTCHA বা একাধিক পাতার ফর্মে কাজ করবে না।",
+          autoStart: "অটো সাবমিট শুরু করুন", autoStop: "থামান", autoReset: "পাঠানোর ইতিহাস মুছুন",
+          autoConfirmDialog: "{count}টি row এক এক করে সাবমিট হবে। শুরু করবেন?", autoRunning: "সাবমিট চলছে… ট্যাব বন্ধ করবেন না।",
+          autoDone: "শেষ। এই রানে {sent}টি পাঠানো হয়েছে, {left}টি বাকি আছে।", autoStopped: "থামানো হয়েছে। {left}টি বাকি আছে।",
+          autoTripped: "টানা ৩ বার ব্যর্থ হওয়ায় থামানো হয়েছে। ইন্টারনেট ও ফর্ম দেখে আবার চেষ্টা করুন।", autoNothing: "পাঠানোর মতো row নেই।", historyCleared: "ইতিহাস মুছে ফেলা হয়েছে।",
+          creditBy: "তৈরি করেছেন", srcTitle: "লিংক না খুললে: ফর্মের পেজ সোর্স পেস্ট করুন", srcHelp: "ফর্মটি ব্রাউজারে খুলে Ctrl+U চাপুন, Ctrl+A দিয়ে সব কপি করে এখানে পেস্ট করুন। তারপর নিচের বোতাম চাপুন। এটা প্রক্সি ছাড়াই কাজ করে।", srcUse: "এই সোর্স থেকে প্রশ্ন পড়ুন", srcBad: "এই লেখায় ফর্মের প্রশ্ন পাওয়া যায়নি। পুরো পেজ সোর্স কপি করেছেন কি না দেখুন, এবং উপরের ঘরে ফর্মের লিংক দিন।", statusHeader: "অবস্থা", st_pending: "অপেক্ষায়", st_opened: "খোলা হয়েছে", st_sending: "পাঠানো হচ্ছে", st_sent: "পাঠানো হয়েছে", st_failed: "ব্যর্থ", st_skipped: "বাদ",
+          note_dup: "ডুপ্লিকেট", note_empty: "ফাঁকা", note_sent: "আগেই পাঠানো", progressText: "পাঠানো {sent}/{total} · ব্যর্থ {failed} · বাদ {skipped}"
         },
         en: {
           brandHome: "Rowform home", languageLabel: "Choose language", localNote: "Your file stays in this browser",
           eyebrow: "SHEET → FORM WORKSPACE", headlineFirst: "Sheets to forms.", headlineSecond: "With your review.",
-          introCopy: "Turn Excel rows into Google Forms prefilled links. Review every response, then submit it yourself.",
+          introCopy: "Send Excel rows to Google Forms by hand or with slow, paced auto submit. Review every row first.",
           stepsLabel: "Workflow steps", stepUpload: "Choose an Excel file", stepMap: "Map form fields", stepReview: "Review and open",
           setupTitle: "Prepare data", setupIndex: "SETUP / 01", workbookLabel: "Excel workbook", uploadGuideButton: "Upload manual",
           filePrompt: "Drop an .xlsx or .xls file here", fileHint: "The first row is treated as column headers", chooseFile: "Choose file",
           worksheetLabel: "Worksheet", formLinkLabel: "Google Forms link",
-          formLinkHint: "Paste a forms.gle share link, a full Form link, or a prefilled link.",
+          formLinkHint: "Paste any Google Form link in this one box. The form's public page is fetched through a proxy to read its questions; your Excel data never leaves the browser.",
           fieldTemplateLabel: "Field ID template (optional)",
           fieldTemplateHint: "If the link above has no entry IDs, paste a prefilled link from the same Form here.",
           backendSetupTitle: "Automatic field lookup setup (one time)",
           backendUrlLabel: "Google Apps Script Web App URL", backendUrlHint: "Deploy apps-script/Code.gs as a Web App and paste its /exec URL. It is saved only in this browser; the workbook is never sent to the backend.",
           backendSave: "Save URL", backendSaved: "Backend URL saved in this browser.", backendCleared: "Saved backend URL removed.", backendInvalid: "Enter a valid Google Apps Script /exec URL.",
-          backendLookupPending: "Looking up Google Form questions…", backendLookupFailed: "Automatic lookup failed. Check that the Form is public and the backend deployment is correct.",
+          backendLookupPending: "Looking up Google Form questions…", backendLookupFailed: "Could not read the form questions. Check that the form is public, try again in a moment, or paste a Get pre-filled link.",
           backendLookupDone: "Found {count} questions. Map them to Excel columns.",
           mappingLabel: "Field mapping", mappingHint: "Upload a workbook and add a Google Forms link to map columns here.",
-          generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and is not uploaded. This tool never submits forms.",
+          generateButton: "Create review links", privacyNote: "The workbook is processed in this browser and never uploaded. Auto submit sends data only to the Google Form you chose.",
           resultsTitle: "Review queue", resultsEmpty: "Your generated links will appear here", downloadButton: "Download CSV",
           emptyTitle: "Ready for your first row", emptyCopy: "Add a workbook and Google Forms link to create a review link for each row.",
-          footerEdition: "/ 01", footerNote: "Review every response, then submit it yourself in Google Forms.",
+          footerEdition: "/ 01", footerNote: "Check every row before you submit.",
           guideTitle: "Upload manual", guideIntro: "File, Google Form link, and mapping requirements.", guideClose: "Close upload guide",
           guideFileTitle: "File type and layout", guideFileBody: "Use an .xlsx, .xls, or .xlsm workbook. Put one column header in the first row; each data row becomes one review link. Empty rows are skipped.",
           guideSheetTitle: "Choose a worksheet", guideSheetBody: "If the workbook has multiple sheets, choose the right one after upload. Remove merged headers or title rows above the headers first.",
-          guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "After saving the backend URL once, a public forms.gle or regular Form link is enough. Without the backend, add a prefilled link from the same Form as the Field ID template.",
+          guideLinkTitle: "Use the right Google Forms link", guideLinkBody: "Paste any Google Form link in the single box. With the Apps Script URL saved once, forms.gle and regular links are looked up automatically. Otherwise paste a Get pre-filled link.",
           guideMapTitle: "Map columns", guideMapBody: "Match each entry ID to the correct workbook column. Leave a field blank to omit it. Review the mappings before creating links.",
           guidePrivacyTitle: "Data and submission", guidePrivacyBody: "The workbook is processed in your browser, not uploaded to a server. Links and CSV files may contain personal data; store them carefully. Open and verify each link, then submit it yourself.",
           guideNetworkNote: "The Excel-reading library loads from the internet. The workbook stays local, but the page needs an internet connection when opened.",
@@ -514,7 +622,7 @@
           templateInvalid: "Use a Google Forms forms.gle or docs.google.com/forms link.",
           fieldTemplateInvalid: "Use a Get pre-filled link from the same Google Form as the field-ID template.",
           fieldTemplateMismatch: "The Form link and field-ID template point to different Forms. Use links from the same Form.",
-          needsFieldTemplate: "The Form link has no question IDs. Add a Get pre-filled link from the same Form as the field-ID template.",
+          needsFieldTemplate: "No question IDs found from this link. Set the Apps Script URL below once, or paste a Get pre-filled link here. The Python tool (rowform.py) works with any link.",
           resolvingFields: "Looking up Google Form question IDs…",
           resolverPrivate: "This Form could not be inspected. Check that it is public, or add a prefilled link from the same Form.",
           resolverFailed: "Could not inspect this Form. Add a prefilled link from the same Form as the field-ID template.",
@@ -525,9 +633,20 @@
           rowHeader: "ROW", formHeader: "FORM LINK", reviewLink: "Review ↗", openForm: "Open prefilled Google Form for row {row}",
           mobileCounter: "{current} / {total} ROWS", mobileOpen: "Open Google Form ↗", swipePrevious: "Show previous row", swipeNext: "Show next row",
           swipeInstructions: "Swipe to the previous or next row, or use the arrow buttons.",
-          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS"
+          csvRow: "row", csvUrl: "prefilled_url", rowCount: "{count} ROWS",
+          modeManual: "Manual submit", modeAuto: "Auto submit", autoDelayLabel: "Pause between rows (seconds)", autoCapLabel: "Max rows per run",
+          autoConfirm: "I have permission to submit to this form and I have checked the rows in the list.",
+          autoNote: "Rows are sent one after another, slowly, never all at once. Test with 2-3 rows first. 'Sent' means the request went out; check Responses in Google Forms to confirm. Login, CAPTCHA and multi-page forms will not work.",
+          autoStart: "Start auto submit", autoStop: "Stop", autoReset: "Clear sent history",
+          autoConfirmDialog: "{count} rows will be submitted one by one. Start?", autoRunning: "Submitting… keep this tab open.",
+          autoDone: "Done. {sent} sent this run, {left} left.", autoStopped: "Stopped. {left} left.",
+          autoTripped: "Stopped after 3 failures in a row. Check your connection and the form, then try again.", autoNothing: "No rows to send.", historyCleared: "History cleared.",
+          creditBy: "Created by", srcTitle: "If the link fails: paste the form page source", srcHelp: "Open the form in your browser, press Ctrl+U, Ctrl+A to copy everything, paste it here, then press the button. This works without any proxy.", srcUse: "Read questions from this source", srcBad: "No form questions found in this text. Make sure you copied the whole page source and put the form link in the box above.", statusHeader: "Status", st_pending: "Waiting", st_opened: "Opened", st_sending: "Sending", st_sent: "Sent", st_failed: "Failed", st_skipped: "Skipped",
+          note_dup: "duplicate", note_empty: "empty", note_sent: "sent before", progressText: "Sent {sent}/{total} · failed {failed} · skipped {skipped}"
         }
       };
+      const DEFAULT_BACKEND_URL = ""; // paste your Apps Script /exec URL here once
+      const CREDIT = { name: "আপনার নাম", photo: "credit.jpg", link: "" }; // set your name, photo file and optional link
       let language = "bn";
       try {
         language = localStorage.getItem("rowform-language") === "en" ? "en" : "bn";
@@ -545,6 +664,7 @@
       let lookupSequence = 0;
       let lookupTimer = null;
       let generated = [];
+      let mode = "manual", running = false, stopFlag = false;
       let currentReviewIndex = 0;
       let swipeStart = null;
       let currentStatus = { key: "initialStatus", type: "", values: {} };
@@ -585,6 +705,7 @@
         if (!tableWrap.hidden) renderResults();
         else resultsSummary.textContent = translate("resultsEmpty");
         setStatus(currentStatus.key, currentStatus.type, currentStatus.values);
+        syncRunBar();
         if (guideDialog.open && guideDialog.contains(document.activeElement)) document.querySelector("#guide-close").focus();
       }
 
@@ -642,7 +763,7 @@
       }
 
       async function loadFile(file) {
-        if (!file) return;
+        if (!file || running) return;
         if (!window.XLSX) {
           setStatus("libraryUnavailable", "error");
           return;
@@ -774,6 +895,7 @@
           updateReadyState();
           return;
         }
+        const usedHeaders = new Set();
         for (const entryId of entryIds) {
           const row = document.createElement("div");
           row.className = "mapping-row";
@@ -795,6 +917,8 @@
             option.textContent = header;
             select.append(option);
           }
+          const guess = bestHeader(fieldLabels.get(entryId) || "", usedHeaders);
+          if (guess) { select.value = guess; usedHeaders.add(guess); }
           row.append(key, select);
           mappingList.append(row);
           select.addEventListener("change", () => {
@@ -840,6 +964,7 @@
           field.append(label, value);
           mobileFields.append(field);
         }
+        mobileCounter.textContent += " · " + translate("st_" + item.state);
         mobileOpen.href = item.url;
         mobileOpen.setAttribute("aria-label", translate("openForm", { row: item.number }));
         mobilePrev.disabled = currentReviewIndex === 0;
@@ -859,6 +984,7 @@
       }
 
       function invalidateResults() {
+        if (running) return;
         generated = [];
         currentReviewIndex = 0;
         tableWrap.hidden = true;
@@ -867,16 +993,19 @@
         resultActions.hidden = true;
         resultBody.replaceChildren();
         resultsSummary.textContent = translate("resultsEmpty");
+        syncRunBar();
       }
 
       function buildLink(template, row, selectedMappings) {
         const url = new URL(template.href);
         for (const key of [...url.searchParams.keys()]) {
-          if (/^entry\.\d+$/.test(key)) url.searchParams.delete(key);
+          if (/^entry\.\d+(?:_[a-z]+)?$/.test(key)) url.searchParams.delete(key);
         }
         for (const mapping of selectedMappings) {
-          const value = row[headers.indexOf(mapping.column)] ?? "";
-          if (value.trim() !== "") url.searchParams.append(mapping.entry, value);
+          const raw = String(row[headers.indexOf(mapping.column)] ?? "").trim();
+          if (!raw) continue;
+          const meta = ((resolvedForm && resolvedForm.fields) || []).find((f) => f.entry === mapping.entry);
+          for (const [k, v] of encodeValue(meta, mapping.entry, raw)) url.searchParams.append(k, v);
         }
         return url.href;
       }
@@ -886,14 +1015,29 @@
         const selectedMappings = mappings();
         const shownColumns = [...new Set(selectedMappings.map((mapping) => mapping.column))];
         const headerRow = document.createElement("tr");
-        for (const label of [translate("rowHeader"), ...shownColumns, translate("formHeader")]) {
+        for (const label of [translate("rowHeader"), ...shownColumns, translate("formHeader"), translate("statusHeader")]) {
           const cell = document.createElement("th");
           cell.textContent = label;
           headerRow.append(cell);
         }
         resultHead.replaceChildren(headerRow);
         resultBody.replaceChildren();
-        generated = rows.map((row, index) => ({ row, number: index + 1, url: buildLink(parseTemplate().url, row, selectedMappings) }));
+        if (!running) {
+          const prev = new Map(generated.map((g) => [g.number, g.state]));
+          const sentBefore = sentSet(), seen = new Set();
+          generated = rows.map((row, index) => {
+            const url = buildLink(parseTemplate().url, row, selectedMappings);
+            const key = hashStr(url);
+            const hasData = [...new URL(url).searchParams.keys()].some((k) => /^entry\.\d+(?:_[a-z]+)?$/.test(k));
+            const old = prev.get(index + 1);
+            let state = ["sent", "failed", "opened"].includes(old) ? old : "pending", note = "";
+            if (!hasData) { state = "skipped"; note = "note_empty"; }
+            else if (seen.has(key)) { state = "skipped"; note = "note_dup"; }
+            else if (state === "pending" && sentBefore.has(key)) { state = "skipped"; note = "note_sent"; }
+            seen.add(key);
+            return { row, number: index + 1, url, key, state, note };
+          });
+        }
         currentReviewIndex = Math.min(previousIndex, generated.length - 1);
         for (const item of generated) {
           const tr = document.createElement("tr");
@@ -917,6 +1061,10 @@
           link.setAttribute("aria-label", translate("openForm", { row: item.number }));
           actionCell.append(link);
           tr.append(actionCell);
+          link.addEventListener("click", () => { if (item.state === "pending") setRowState(item, "opened"); });
+          const stateCell = document.createElement("td"), pill = document.createElement("span");
+          stateCell.append(pill); tr.append(stateCell);
+          item.tr = tr; item.pill = pill; paint(item);
           resultBody.append(tr);
         }
         emptyState.hidden = true;
@@ -924,6 +1072,7 @@
         resultActions.hidden = false;
         resultsSummary.textContent = translate("resultCount", { count: generated.length });
         renderMobileReview();
+        syncRunBar();
       }
 
       function downloadCsv() {
@@ -936,6 +1085,111 @@
         link.click();
         URL.revokeObjectURL(link.href);
       }
+
+      function hashStr(text) {
+        let h = 2166136261;
+        for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return (h >>> 0).toString(36) + text.length;
+      }
+      const HISTORY_KEY = "rowform-sent";
+      function sentSet() { try { return new Set(JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]")); } catch { return new Set(); } }
+      function saveSent(set) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify([...set].slice(-5000))); } catch {} }
+
+      function paint(item) {
+        if (!item.pill) return;
+        item.pill.className = "pill " + item.state;
+        item.pill.textContent = translate("st_" + item.state) + (item.state === "skipped" && item.note ? " · " + translate(item.note) : "");
+        item.tr.classList.toggle("done", item.state === "sent" || item.state === "opened");
+      }
+      function setRowState(item, state) {
+        item.state = state; paint(item); updateBar();
+        if (generated[currentReviewIndex] === item) renderMobileReview();
+      }
+      function updateBar() {
+        const count = (name) => generated.filter((g) => g.state === name).length;
+        const sent = count("sent");
+        barFill.style.width = (sent / Math.max(1, generated.length) * 100) + "%";
+        progressText.textContent = translate("progressText", { sent, total: generated.length, failed: count("failed"), skipped: count("skipped") });
+      }
+      function syncRunBar() {
+        const on = mode === "auto" && generated.length > 0;
+        autobox.hidden = mode !== "auto";
+        runBar.hidden = !on;
+        const todo = generated.some((g) => g.state === "pending" || g.state === "failed");
+        autoStart.disabled = !(on && todo && autoConfirm.checked && !running);
+        autoStop.disabled = !running;
+        updateBar();
+      }
+      function setMode(next) {
+        if (running) return;
+        mode = next;
+        for (const [name, button] of Object.entries(modeButtons)) button.setAttribute("aria-pressed", String(name === mode));
+        syncRunBar();
+      }
+      function lockUi(on) {
+        document.querySelectorAll(".setup-body input, .setup-body select, .setup-body button").forEach((el) => { el.disabled = on; });
+        if (!on) updateReadyState();
+      }
+
+      async function sendOne(item) {
+        const source = new URL(item.url), body = new URLSearchParams();
+        for (const [key, value] of source.searchParams) if (/^entry\.\d+(?:_[a-z]+)?$/.test(key)) body.append(key, value);
+        const target = new URL(source.origin + source.pathname.replace(/\/viewform$/, "/formResponse"));
+        if (target.hostname !== "docs.google.com" || !target.pathname.endsWith("/formResponse")) throw new Error("BAD_TARGET");
+        body.append("fvv", "1");
+        if (resolvedForm && resolvedForm.pages > 1) body.append("pageHistory", Array.from({ length: resolvedForm.pages }, (_, i) => i).join(","));
+        await fetch(target.href, { method: "POST", mode: "no-cors", credentials: "omit", referrerPolicy: "no-referrer", body });
+      }
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const warnLeave = (event) => { event.preventDefault(); event.returnValue = ""; };
+
+      async function runAuto() {
+        if (running) return;
+        const delay = Math.max(3, Number(delayInput.value) || 10);
+        const cap = Math.max(1, Math.min(500, Number(capInput.value) || 20));
+        const todo = generated.filter((g) => g.state === "pending" || g.state === "failed").slice(0, cap);
+        if (!todo.length) { setStatus("autoNothing", "error"); return; }
+        if (!window.confirm(translate("autoConfirmDialog", { count: todo.length }))) return;
+        running = true; stopFlag = false; lockUi(true); syncRunBar();
+        window.addEventListener("beforeunload", warnLeave);
+        setStatus("autoRunning");
+        const sent = sentSet(); let fails = 0, done = 0, tripped = false;
+        for (let i = 0; i < todo.length && !stopFlag; i++) {
+          const item = todo[i];
+          setRowState(item, "sending");
+          try {
+            await sendOne(item);
+            setRowState(item, "sent"); sent.add(item.key); saveSent(sent); fails = 0; done++;
+          } catch {
+            setRowState(item, "failed");
+            if (++fails >= 3) { tripped = true; break; }
+          }
+          if (i < todo.length - 1 && !stopFlag) await sleep(delay * 1000 * (0.7 + Math.random() * 0.6));
+        }
+        running = false;
+        window.removeEventListener("beforeunload", warnLeave);
+        lockUi(false); syncRunBar();
+        const left = generated.filter((g) => g.state === "pending" || g.state === "failed").length;
+        if (tripped) setStatus("autoTripped", "error");
+        else if (stopFlag) setStatus("autoStopped", "", { left });
+        else setStatus("autoDone", "success", { sent: done, left });
+      }
+
+      modeButtons.manual.addEventListener("click", () => setMode("manual"));
+      modeButtons.auto.addEventListener("click", () => setMode("auto"));
+      autoConfirm.addEventListener("change", syncRunBar);
+      autoStart.addEventListener("click", runAuto);
+      autoStop.addEventListener("click", () => { stopFlag = true; autoStop.disabled = true; });
+      autoReset.addEventListener("click", () => {
+        if (running) return;
+        try { localStorage.removeItem(HISTORY_KEY); } catch {}
+        if (!tableWrap.hidden) renderResults();
+        setStatus("historyCleared", "success");
+      });
+      mobileOpen.addEventListener("click", () => {
+        const item = generated[currentReviewIndex];
+        if (item && item.state === "pending") setRowState(item, "opened");
+      });
 
       fileInput.addEventListener("change", (event) => loadFile(event.target.files[0]));
       sheetSelect.addEventListener("change", () => readSheet(sheetSelect.value));
@@ -971,6 +1225,104 @@
         if (event.target === guideDialog) guideDialog.close();
       });
 
+      const PROXIES = [
+        (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+        (u) => "https://corsproxy.io/?url=" + encodeURIComponent(u),
+        (u) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u)
+      ];
+      async function proxyLookup(sourceUrl) {
+        let html = "";
+        for (const build of PROXIES) {
+          const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 15000);
+          try {
+            const res = await fetch(build(normalizedFormUrl(sourceUrl)), { signal: ctl.signal });
+            const text = res.ok ? await res.text() : "";
+            if (text.includes("FB_PUBLIC_LOAD_DATA_")) { html = text; break; }
+          } catch {} finally { clearTimeout(timer); }
+        }
+        if (!html) throw new Error("PROXY_FAILED");
+        return parseFormHtml(html, sourceUrl);
+      }
+      function parseFormHtml(html, sourceUrl) {
+        const m = html.match(/FB_PUBLIC_LOAD_DATA_\s*=\s*([\s\S]*?);\s*<\/script>/);
+        if (!m) throw new Error("PROXY_FAILED");
+        let data;
+        try { data = JSON.parse(m[1]); } catch { throw new Error("PROXY_FAILED"); }
+        const fields = []; let pages = 1;
+        for (const q of (data[1] && data[1][1]) || []) {
+          const type = q[3];
+          if (type === 8) { pages += 1; continue; }
+          for (const sub of q[4] || []) {
+            let label = String(q[1] || "").trim() || "Google Forms field";
+            if (type === 7 && sub[3] && sub[3][0]) label += ` [${sub[3][0]}]`;
+            fields.push({ entry: "entry." + sub[0], label, type, required: !!sub[2], options: (sub[1] || []).map((o) => o && o[0]).filter((o) => o != null) });
+          }
+        }
+        if (!fields.length) throw new Error("PROXY_FAILED");
+        const decode = (t) => t.replace(/&amp;/g, "&");
+        let formUrl = "";
+        const act = html.match(/action="(https:\/\/docs\.google\.com\/forms\/[^"]+?)\/formResponse"/);
+        if (act) formUrl = decode(act[1]) + "/viewform";
+        if (!formUrl) { const og = html.match(/property="og:url"\s+content="([^"]+)"/); if (og) formUrl = decode(og[1]).split("?")[0]; }
+        if (!formUrl) { try { if (new URL(sourceUrl).hostname === "docs.google.com") formUrl = normalizedFormUrl(sourceUrl); } catch {} }
+        if (!/\/viewform$/.test(formUrl)) throw new Error("PROXY_FAILED");
+        return { ok: true, formUrl, fields, pages };
+      }
+      async function lookupForm(sourceUrl) {
+        if (backendUrl && isValidBackendUrl(backendUrl)) {
+          try { return await requestFormMetadata(sourceUrl, backendUrl); }
+          catch (error) { if (/ACCESS|PUBLIC/.test(error.message)) throw error; }
+        }
+        return proxyLookup(sourceUrl);
+      }
+      const normText = (t) => String(t).toLowerCase().replace(/[\s\-_:.,;!?()\[\]{}"'*/\\|]+/g, " ").trim();
+      function bestHeader(label, used) {
+        const nl = normText(label);
+        if (!nl) return "";
+        let best = "", score = 0;
+        for (const h of headers) {
+          const nh = normText(h);
+          if (!nh || used.has(h)) continue;
+          const s = nh === nl ? 1 : (nh.includes(nl) || nl.includes(nh)) ? 0.9 : 0;
+          if (s > score) { best = h; score = s; }
+        }
+        return score >= 0.9 ? best : "";
+      }
+      function parseDateText(v) {
+        let m = v.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+        if (m) return [+m[1], +m[2], +m[3]];
+        m = v.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+        return m ? [+m[3], +m[2], +m[1]] : null;
+      }
+      function parseTimeText(v) {
+        const m = v.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(am|pm)?$/i);
+        if (!m) return null;
+        let h = +m[1];
+        if (m[3]) { const pm = m[3].toLowerCase() === "pm"; if (pm && h < 12) h += 12; if (!pm && h === 12) h = 0; }
+        return [h, +m[2]];
+      }
+      function encodeValue(meta, entry, raw) {
+        const type = meta && meta.type;
+        if (type === 9) { const d = parseDateText(raw); return d ? [[entry + "_year", d[0]], [entry + "_month", d[1]], [entry + "_day", d[2]]] : []; }
+        if (type === 10) { const t = parseTimeText(raw); return t ? [[entry + "_hour", t[0]], [entry + "_minute", t[1]]] : []; }
+        const pick = (v) => { const o = ((meta && meta.options) || []).find((x) => String(x).toLowerCase() === v.toLowerCase()); return o ?? v; };
+        if (type === 4) return raw.split(/[;,|\n]+/).map((x) => x.trim()).filter(Boolean).map((x) => [entry, pick(x)]);
+        if (type === 2 || type === 3 || type === 5) return [[entry, pick(raw)]];
+        return [[entry, raw]];
+      }
+
+      document.querySelector("#src-use").addEventListener("click", () => {
+        const link = templateInput.value.trim();
+        const parsed = link ? parseFormUrl(link) : { errorKey: "needsFieldTemplate" };
+        try {
+          if (parsed.errorKey) throw new Error("NO_LINK");
+          const meta = parseFormHtml(document.querySelector("#src-paste").value, link);
+          resolvedForm = { sourceUrl: normalizedFormUrl(link), formUrl: meta.formUrl, fields: meta.fields, pages: meta.pages };
+          renderMapping(); invalidateResults();
+          setStatus("backendLookupDone", "success", { count: meta.fields.length });
+        } catch { setStatus("srcBad", "error"); }
+      });
+
       function requestFormMetadata(formUrl, endpoint) {
         return new Promise((resolve, reject) => {
           const callbackName = `__rowformLookup_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -1004,7 +1356,7 @@
 
       async function resolveFormAutomatically(sourceUrl, sequence) {
         try {
-          const metadata = await requestFormMetadata(sourceUrl, backendUrl);
+          const metadata = await lookupForm(sourceUrl);
           if (sequence !== lookupSequence || fieldTemplateInput.value.trim()) return;
           if (!metadata || !metadata.ok || !Array.isArray(metadata.fields) || !metadata.fields.length) {
             const code = metadata && metadata.error;
@@ -1016,7 +1368,8 @@
           resolvedForm = {
             sourceUrl: normalizedFormUrl(sourceUrl),
             formUrl: metadata.formUrl,
-            fields: metadata.fields
+            fields: metadata.fields,
+            pages: metadata.pages || 1
           };
           renderMapping();
           invalidateResults();
@@ -1052,7 +1405,7 @@
           setStatus("initialStatus");
           return;
         }
-        if (!formUrl || !backendUrl || !isValidBackendUrl(backendUrl)) {
+        if (!formUrl) {
           setStatus(parsed.errorKey || "needsFieldTemplate", "error");
           return;
         }
@@ -1104,10 +1457,20 @@
       try {
         backendUrl = localStorage.getItem("rowform-backend-url") || "";
       } catch {}
+      if (!backendUrl && isValidBackendUrl(DEFAULT_BACKEND_URL)) backendUrl = DEFAULT_BACKEND_URL;
       backendUrlInput.value = backendUrl;
+      {
+        const img = document.querySelector("#credit-img"), initial = document.querySelector("#credit-initial");
+        document.querySelector("#credit-name").textContent = CREDIT.name;
+        initial.textContent = [...CREDIT.name][0] || "•";
+        img.addEventListener("error", () => { img.hidden = true; initial.hidden = false; });
+        img.src = CREDIT.photo;
+        const a = document.querySelector("#credit-link");
+        if (CREDIT.link) { a.href = CREDIT.link; a.textContent = CREDIT.link.replace(/^https?:\/\//, ""); a.hidden = false; }
+      }
       if (backendUrl) backendStatusKey = "backendSaved";
       applyLanguage();
     })();
   </script>
 </body>
-</html>
+        </html>
